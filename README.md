@@ -1,6 +1,6 @@
 <table style="border:0px;">
   <tr style="border:0px;">
-    <td style="border:0px;"><img src="./images/logo_pc7.png"></td>
+    <td style="border:0px;"><img src="./images/logo_pc7_sm.png"></td>
   </tr>
 </table>
 

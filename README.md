@@ -1,3 +1,9 @@
+<table style="border:0px;">
+  <tr style="border:0px;">
+    <td style="border:0px;"><img src="./images/logo_pc7.png"></td>
+  </tr>
+</table>
+
 # OpenMMS
 A Mobile Mapping System (MMS) Open Source Software and Hardware Project
 

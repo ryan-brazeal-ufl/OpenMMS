@@ -8,4 +8,4 @@
 ***View https://www.openmms.org for complete project documentation, information and news!***
 
 
- - GITHUB PUBLICATION IN PROGRESS (as of May 5th 2019)
+ - GITHUB PUBLICATION IN PROGRESS (started May 5th 2019)

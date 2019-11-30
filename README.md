@@ -1,4 +1,5 @@
-<img src="./images/logo_pc7_sm.png">
+<!--- <img src="./images/logo_pc7_sm.png"> --->
+<img src="./images/logo1_sm.png">
 
 # OpenMMS
 A Mobile Mapping System (MMS) Open Source Software and Hardware Project

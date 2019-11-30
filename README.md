@@ -3,8 +3,9 @@
 <br>
 
 # OpenMMS
-A Mobile Mapping System (MMS) Open Source Software and Hardware Project
+**A MOBILE MAPPING SYSTEM (MMS) OPEN SOURCE SOFTWARE AND HARDWARE PROJECT**
 
-GITHUB PUBLICATION IN PROGRESS (as of May 5th 2019)
+***View https://www.openmms.org for complete project documentation, information and news!***
 
-View https://www.openmms.org for complete project documentation, information and news!
+
+ - GITHUB PUBLICATION IN PROGRESS (as of May 5th 2019)

@@ -7,5 +7,7 @@
 
 ***View https://www.openmms.org for complete project documentation, information and news!***
 
+***View*** <a href="https://www.openmms.org" target="_blank">https://www.openmms.org</a> ***for complete project documentation, information and news!***
+
 
  - GITHUB PUBLICATION IN PROGRESS (started May 5th 2019)

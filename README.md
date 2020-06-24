@@ -11,4 +11,4 @@
  - Still a work in progress as of June 2020
 
 <br><br>
-<img src="./images/github_mosaic.jpg">
+<img src="./images/github_mosaic_sm.jpg">

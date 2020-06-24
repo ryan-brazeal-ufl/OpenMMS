@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ############################################################################
-#                  OpenMMS Real-Time Controller Software                   #
+#              OpenMMS Real-Time Controller Software (VLP-16)              #
 ############################################################################
 # Version: 1.3                                                             #
 # Date:    June 2020                                                       #

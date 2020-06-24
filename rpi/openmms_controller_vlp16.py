@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 ############################################################################
-#               OpenMMS Sensor Controller Software/Firmware                #
+#                  OpenMMS Real-Time Controller Software                   #
 ############################################################################
 # Version: 1.3                                                             #
-# Date:    April 2020                                                      #
+# Date:    June 2020                                                       #
 # Author:  Ryan Brazeal                                                    #
 # Email:   ryan.brazeal@ufl.edu                                            #
 #                                                                          #

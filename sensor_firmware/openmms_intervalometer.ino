@@ -6,7 +6,7 @@
 # Author:  Ryan Brazeal                                                    #
 # Email:   ryan.brazeal@ufl.edu                                            #
 #                                                                          #
-#    OPEN SOURCE LICENSE INFO:                                             #
+#    OPEN-SOURCE LICENSE INFO:                                             #
 #                                                                          #
 #    This file is part of OpenMMS_OSS.                                     #
 #                                                                          #

@@ -3,7 +3,7 @@
 <br>
 
 # OpenMMS - The Open Mobile Mapping System
-**AN OPEN SOURCE SOFTWARE AND HARDWARE PROJECT**
+**AN OPEN-SOURCE SOFTWARE AND HARDWARE PROJECT**
 
 ***View https://www.openmms.org for complete project documentation, information and news!***
 

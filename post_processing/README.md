@@ -12,3 +12,6 @@
 <br>&nbsp;&nbsp;&nbsp;<a href="./openmms_preprocess_images.py">OpenMMS Preprocess Images</a>
 <br>&nbsp;&nbsp;&nbsp;<a href="./openmms_colorize.py">OpenMMS Colorize</a></p>
 
+<p align="center"><br>
+<img width="60%" src="../images/i_heart_lidar.png">
+</p>

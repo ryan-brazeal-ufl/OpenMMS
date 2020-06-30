@@ -5,7 +5,7 @@
 | The current OpenMMS Hardware utilizes an Applanix GNSS-INS sensor, and therefore requires the use of the Applanix POSPac UAV (or MMS) software application in order to process the .T04 file collected from the sensor. **Currently, POSPac can ONLY be installed within a Windows OS environment.** |
 
 <p align="center"><br>
-<img src="../images/python3.jpg">
+<img src="../images/openmms_oss.jpg">
 </p>
 
 <p>These command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible.</p>

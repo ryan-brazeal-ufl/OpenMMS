@@ -1,9 +1,9 @@
 <img src="./images/github_mosaic_sm.jpg">
 <br>
 <p>
-<img width="20%"  src="./images/pc_logo7.jpg">
-<h4>AN OPEN-SOURCE SOFTWARE AND HARDWARE PROJECT</h4>
+<img width="75%"  src="./images/pc_logo7.jpg">
 </p>
+<h4>AN OPEN-SOURCE SOFTWARE AND HARDWARE PROJECT</h4>
 
 ***View https://www.openmms.org for complete project documentation, information and news!***
 

@@ -1,1 +1,1 @@
-<img src="../images/pp_workflow3.jpg">
+<img src="../images/pp_workflow4.jpg">

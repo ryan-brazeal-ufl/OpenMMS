@@ -2,7 +2,7 @@
 
 | IMPORTANT NOTE | 
 | ---------------|
-| The current OpenMMS Hardware utilizes an Applanix GNSS-INS sensor, and therefore requires the use of the Applanix POSPac software application in order to process the .T04 file collected from the sensor. **Currently, POSPac can ONLY be installed within a Windows OS environment.** |
+| The current OpenMMS Hardware utilizes an Applanix GNSS-INS sensor, and therefore requires the use of the Applanix POSPac software application in order to process the .T04 file collected from an OpenMMS sensor. **Currently, POSPac can ONLY be installed within a Windows OS environment.** |
 
 <p align="center">
 <img src="../images/openmms_oss.png">

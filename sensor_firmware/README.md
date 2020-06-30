@@ -1,5 +1,5 @@
 <h2>OpenMMS Real-Time Software</h2>
-<h4>These applications are installed on the Raspberry Pi computer and the Adafruit Trinket Pro micro-controller inside the OpenMMS Hardware and provide the user with operational control of the sensor.</h4>
+<h4>These applications are installed on the Raspberry Pi computer and the Adafruit Trinket Pro micro-controller inside the OpenMMS Hardware, and provide the user with operational control of the sensor.</h4>
 <p>&nbsp;&nbsp;&nbsp;<a href="./openmms_controller_vlp16.py">OpenMMS Controller (Python3)</a>
 <br>&nbsp;&nbsp;&nbsp;<a href="./openmms_intervalometer.ino">OpenMMS Intervalometer (Arduino C/C++)</a></p>
 

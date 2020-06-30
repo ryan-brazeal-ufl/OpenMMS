@@ -1,5 +1,4 @@
-<img src="./images/pc_logo7_sm.png">
-<!--- <img src="./images/logo1_sm.png"> --->
+<img src="./images/github_mosaic_sm.jpg">
 <br>
 
 # OpenMMS - The Open Mobile Mapping System
@@ -11,4 +10,4 @@
  - Still a work in progress as of June 2020
 
 <br><br>
-<img src="./images/github_mosaic_sm.jpg">
+

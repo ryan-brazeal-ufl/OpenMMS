@@ -1,7 +1,7 @@
 <img src="./images/github_mosaic_sm.jpg">
 <br>
 <p>
-<img width="15%" src="./images/pc_logo7_sm.png"><h2> - The Open Mobile Mapping System</h2><br>
+<img width="20%"  src="./images/pc_logo7.jpg">
 <h4>AN OPEN-SOURCE SOFTWARE AND HARDWARE PROJECT</h4>
 </p>
 

@@ -14,11 +14,11 @@
 | ---------------|
 | A current development effort (as of June 2020) is underway to leverage NVidia CUDA GPU processing techniques within the OpenMMS software suite for the Windows 10 OS. Future versions of the OpenMMS applications will support NVidia CUDA processing, when possible. |
 
-<p>&nbsp;&nbsp;&nbsp;<a href="./openmms_pcap_check.py">OpenMMS PCAP Check</a>
-<br>&nbsp;&nbsp;&nbsp;<a href="./openmms_traj_convert.py">OpenMMS TRAJ Convert</a>
-<br>&nbsp;&nbsp;&nbsp;<a href="./openmms_georeference.py">OpenMMS Georeference</a>
-<br>&nbsp;&nbsp;&nbsp;<a href="./openmms_preprocess_images.py">OpenMMS Preprocess Images</a>
-<br>&nbsp;&nbsp;&nbsp;<a href="./openmms_colorize.py">OpenMMS Colorize</a></p>
+<p>&nbsp;&nbsp;&nbsp;<a href="./code/openmms_pcap_check.py">OpenMMS PCAP Check</a>
+<br>&nbsp;&nbsp;&nbsp;<a href="./code/openmms_traj_convert.py">OpenMMS TRAJ Convert</a>
+<br>&nbsp;&nbsp;&nbsp;<a href="./code/openmms_georeference.py">OpenMMS Georeference</a>
+<br>&nbsp;&nbsp;&nbsp;<a href="./code/openmms_preprocess_images.py">OpenMMS Preprocess Images</a>
+<br>&nbsp;&nbsp;&nbsp;<a href="./code/openmms_colorize.py">OpenMMS Colorize</a></p>
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

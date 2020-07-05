@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="TENHOPKHdXaYaZaZar" ProfileVersion="2.0" SoftwareVersion="8.1">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="data" type="data">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Time" type="double" subtype="datetime" select="Seconds of the Day" format="u	%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Easting" type="double" subtype="distance" select="Meters" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Northing" type="double" subtype="distance" select="Meters" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Orthometric height" type="double" subtype="distance" select="Meters" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Omega" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Phi" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Kappa" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Heading" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Body Angular Rate" type="double" subtype="number" select="Text" format="%.3lf" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="header" type="header">
+          <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="footer" type="footer">
+          <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

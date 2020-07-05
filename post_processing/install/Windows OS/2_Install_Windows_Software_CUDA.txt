@@ -1,0 +1,6 @@
+Download and install latest NVIDIA CUDA ToolKit, https://developer.nvidia.com/cuda-toolkit
+	-Default installation should work fine
+	
+Download and install latest Microsoft C++ Build Tools, https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16
+	- Select Visual C++ Build Tools under the Workloads section
+	- Install

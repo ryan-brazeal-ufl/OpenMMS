@@ -1,0 +1,34 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+
+pcapNum=0
+pcap=none
+
+for f in "$DIR"/*; do
+  fn="$(basename -- $f)"
+  ext="${fn##*.}"
+  extUP=`echo "$ext" | tr '[:lower:]' '[:upper:]'`
+
+  if [[ "$extUP" == "PCAP" ]]; then
+    pcap=$f
+    pcapNum=$((pcapNum+1))
+  fi
+done
+
+if [ $pcapNum = 1 ]; then
+  python /OpenMMS/code/openmms_pcap_check.py $pcap
+fi
+
+if [ $pcapNum = 0 ]; then
+  echo "No PCAP file was found in the current directory"
+fi  
+
+if [ $pcapNum -gt 1 ]; then
+  echo "More than one PCAP file was found in the current directory, only a single PCAP file should be present"
+fi
+
+
+echo ""
+read -p "Press Enter to continue ..."

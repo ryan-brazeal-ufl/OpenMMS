@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="T_LLhN_RPHd_XYZa_Zar_ENUv" ProfileVersion="2.0.1" SoftwareVersion="8.4">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="data" type="data">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Time" type="double" subtype="datetime" select="Seconds of the Day" format="u	%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Latitude" type="double" subtype="radians_lat" select="Decimal Degrees (signed)" format="%.8lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Longitude" type="double" subtype="radians_lon" select="Decimal Degrees (signed)" format="%.8lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Ellipsoid height" type="double" subtype="distance" select="Meters" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Geoid Separation" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Roll" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Pitch" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Heading" type="double" subtype="angle" select="Degrees" format="%.4lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Body Angular Rate" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="East velocity" type="double" subtype="velocity" select="Meters per second" format="%.2lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="North velocity" type="double" subtype="velocity" select="Meters per second" format="%.2lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Up velocity" type="double" subtype="velocity" select="Meters per second" format="%.2lf" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="header" type="header">
+          <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="footer" type="footer">
+          <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

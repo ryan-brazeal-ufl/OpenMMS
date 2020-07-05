@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+
+las_file="../../filtered.las"
+
+color_balance="1"
+
+do_dist_search_after="False"
+
+
+python /OpenMMS/code/openmms_colorize.py $DIR $las_file $color_balance $do_dist_search_after
+
+echo ""
+read -p "Press Enter to continue ..."

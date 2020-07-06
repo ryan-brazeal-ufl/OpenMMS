@@ -14,11 +14,11 @@
   
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger |
 | --------------------|-----------------------|------------------------|
-| <a href="./code/openmms_pcap_check.py">OpenMMS PCAP Check</a> | 1 | 2 |
-| <a href="./code/openmms_traj_convert.py">OpenMMS TRAJ Convert</a> | 1 | 2 |
-| <a href="./code/openmms_georeference.py">OpenMMS Georeference</a> | 1 | 2 |
-| <a href="./code/openmms_preprocess_images.py">OpenMMS Preprocess Images</a> | 1 | 2 |
-| <a href="./code/openmms_colorize.py">OpenMMS Colorize</a> | 1 | 2 |
+| <a href="./code/openmms_pcap_check.py">OpenMMS PCAP Check.py</a> | 1 | 2 |
+| <a href="./code/openmms_traj_convert.py">OpenMMS TRAJ Convert.py</a> | 1 | 2 |
+| <a href="./code/openmms_georeference.py">OpenMMS Georeference.py</a> | 1 | 2 |
+| <a href="./code/openmms_preprocess_images.py">OpenMMS Preprocess Images.py</a> | 1 | 2 |
+| <a href="./code/openmms_colorize.py">OpenMMS Colorize.py</a> | 1 | 2 |
 
 <h3>Sensor Calibration Applications</h3>
 
@@ -26,9 +26,9 @@
 
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger | 
 | --------------------|-----------------------|----------------------- |
-| <a href="./code/openmms_vlp16_calibration.py">OpenMMS VLP-16 Calibration</a> | 1 | 2 |
-| <a href="./code/openmms_vlp16_calibration_CUDA.py">OpenMMS VLP-16 Calibration (CUDA)</a> | 1 | 2 |
-| <a href="./code/openmms_lever_cal.xlsx">OpenMMS Lever-arm Calibration</a> | 1 | 2 |
+| <a href="./code/openmms_vlp16_calibration.py">OpenMMS VLP-16 Calibration.py</a> | 1 | 2 |
+| <a href="./code/openmms_vlp16_calibration_CUDA.py">OpenMMS VLP-16 Calibration (CUDA).py</a> | 1 | 2 |
+| <a href="./code/openmms_lever_cal.xlsx">OpenMMS Lever-arm Calibration.xlsx</a> | 1 | 2 |
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

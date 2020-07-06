@@ -124,10 +124,10 @@ In order to produce the highest quality dataset for the positions and orientatio
   <b>1.</b> Make sure to open the application at least once after installing it. This sets up the necessary directories structure on the computer.
 </p>
 <p>
-  <b>2.</b> With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\ directory, to the C:\ProgramData\Applanix\User Format Profiles\ directory. The ProgramData directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 
+  <b>2.</b> With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the <i>C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\</i> directory, to the <i>C:\ProgramData\Applanix\User Format Profiles\</i> directory. The <i>ProgramData</i> directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 
 </p>
 <p>
-  <b>3.</b> Next, copy the example <b>OpenMMS WGS84 UTM EGM96.postml</b> project template file from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\ directory, to the C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\ directory. Where {USERNAME} would be replaced with the actual username logged into the computer. The AppData directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
+  <b>3.</b> Next, copy the example <b>OpenMMS WGS84 UTM EGM96.postml</b> project template file from the <i>C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\</i> directory, to the <i>C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\</i> directory. Where <i>{USERNAME}</i> would be replaced with the actual username logged into the computer. The <i>AppData</i> directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
 </p>
 <p>
   <b>4.</b> Open POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image. Click the <i>OK</i> button to finish. 

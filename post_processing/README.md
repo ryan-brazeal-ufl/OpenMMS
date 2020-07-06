@@ -115,7 +115,7 @@ However, the NVidia CUDA Toolkit requires that an appropriate version of the Mic
 <hr>
 <h3>Thanks to rapidlasso!</h3>
 <p>
-In addition to all the foundational Python packages, many thanks goes to the <a href="https://rapidlasso.com/">rapidlasso</a> team for the creation of <a href="https://rapidlasso.com/lastools/">LAStools</a>. The OpenMMS Georeferencing application utilizes the las2las binaries (for Windows and for Mac/Linux) for efficiently merging multiple .LAS files together, and for assigning the point cloud's coordinate system within the file's header section.
+In addition to all the foundational Python packages, many thanks go to the <a href="https://rapidlasso.com/">rapidlasso</a> team for the creation of <a href="https://rapidlasso.com/lastools/">LAStools</a>. The OpenMMS Georeferencing application utilizes the <a href="https://rapidlasso.com/lastools/las2las/">las2las</a> binaries (for Windows and for Mac/Linux) for efficiently merging multiple .LAS files together, and for assigning the point cloud's coordinate system within the file's header.
 </p>
 <hr>
 

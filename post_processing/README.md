@@ -16,8 +16,12 @@
 </p>
 <hr>
 <h3>Data Processing Applications Overview</h3>
-
-<p>The following command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible. The trigger files for both Windows and Mac computers are also shown here for reference and exploration. The trigger files are a key part of the current OpenMMS software, and provide an easy-to-use and systematic approach to the complex numerical computations that are involved with producing high quality Mobile Mapping datasets. A complete explanation and demonstration of the OpenMMS processing approach can be found on the OpenMMS website.</p>
+<p>
+The following command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible.
+</p>
+<p>
+The trigger files for both Windows and Mac OS are also shown here for reference, and general information. The trigger files are a key part of the current OpenMMS software, and provide an easy-to-use and systematic approach to the complex numerical computations that are involved with producing high quality Mobile Mapping datasets. A complete explanation, and demonstration, of the OpenMMS processing approach can be found on the <a href="https://www.openmms.org">OpenMMS website</a>.
+</p>
   
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger |
 | --------------------|-----------------------|------------------------|
@@ -30,7 +34,7 @@
 <hr>
 <h3>Sensor Calibration Applications Overview</h3>
 
-<p>The following command-line-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet template is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed and the lever-arm offset values are estimated. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the OpenMMS website for complete details.</p>
+<p>The following command-line-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet template is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed and the lever-arm offset values are estimated. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
 
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger | 
 | --------------------|-----------------------|----------------------- |
@@ -78,7 +82,7 @@ pip install scikit-learn
 Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloudcompare.org">CloudCompare</a> open-source 3D point cloud and mesh processing software, for specific visualization and analysis purposes. Download and install the latest version of CloudCompare from <a href="https://www.cloudcompare.org/release/index.html">HERE</a>, and use the default installation settings.
 </p>
 
-<h4>5. ***OPTIONAL*** NVidia CUDA Toolkit (Windows OS Users Only!)</h4>
+<h4>5. ***OPTIONAL*** NVidia CUDA Processing (Windows OS Users Only!)</h4>
 <p>
 For Windows OS users who also have a NVidia Graphics Card with CUDA processing capabilities installed in their computer, a few extra Python dependencies need to be installed. They can be installed by executing the <b>3_python3_dep_install_CUDA.bat</b> file in the install/Windows OS subdirectory. The following lists the Python3 dependency installations required to support NVidia CUDA GPU processing in the OpenMMS Applications (where possible).
 </p>

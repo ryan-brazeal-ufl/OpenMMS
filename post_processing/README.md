@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="60%" src="../images/openmms_ascii_logo.jpg">
+  <img width="75%" src="../images/openmms_ascii_logo.jpg">
 </p>
 
 <h2>OpenMMS Post-Processing Software</h2>

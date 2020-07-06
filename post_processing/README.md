@@ -42,7 +42,7 @@
 <h3>Installation</h3>
 <h4>1. Python3</h4>
 <p>
-Download the latest Python 3.7.X release from the <a href="https://www.python.org/downloads">Python.org</a> website and install it on a computer. Ensure that the python executable location is added to the computer's PATH variable (there should be a checkbox within the Python installer).
+Download the latest Python 3.7.X release from the <a href="https://www.python.org/downloads">Python.org</a> website and install it on a computer. Ensure that the python executable location is added to the computer's PATH variable (there should be a checkbox within the Python installer) <b>OR,</b> if the user is familiar and comfortable setting up virtual environments, this approach is <b>recommended.</b>
 </p>
 <h4>2. OpenMMS Applications</h4>
 <p>
@@ -55,7 +55,7 @@ Installing OpenMMS Open-Source Software (OpenMMS_OSS) is very simple, and very p
 
 <h4>3. Python3 Dependencies</h4>
 <p>
-  Browse to the OpenMMS directory installed on the root drive and open the <b>install</b> subdirectory. Open the appropriate subdirectory based on the computer OS, and lastly execute the <b>1_python3_dep_install</b> file. A commandline/terminal window should open and begin 'pip installing' the needed dependencies. The following lists the dependency installations required to support the OpenMMS Applications.
+  Browse to the OpenMMS directory installed on the root drive and open the <b>install</b> subdirectory. Open the appropriate subdirectory based on the computer OS, and lastly execute the <b>1_python3_dep_install</b> file. A commandline/terminal window should open and begin 'pip installing' the needed dependencies. The following lists the Python3 dependency installations required to support the OpenMMS Applications.
 </p>
 
 ```
@@ -72,7 +72,15 @@ pip install numdifftools
 pip install opencv-python
 pip install scikit-learn
 ```
+<p>
+  For Windows OS users who also have a NVidia Graphics Card with CUDA processing capabilities installed in their computer, a few extra Python dependencies need to be installed. They can be installed by executing the <b>3_python3_dep_install_CUDA.bat</b> file in the install/Windows OS subdirectory. The following lists the Python3 dependency installations required to support NVidia CUDA GPU processing in the OpenMMS Applications (where possible).
+</p>
 
+```
+pip install pycuda
+pip install scikit-cuda
+pip install -e git://github.com/lebedov/scikit-cuda#egg=scikit-cuda
+```
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

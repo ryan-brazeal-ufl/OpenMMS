@@ -123,20 +123,21 @@ In addition to all the foundational Python packages, many thanks go to the <a hr
 In order to produce the highest quality dataset for the positions and orientations of the OpenMMS sensor over the course of a data collection campaign, the GNSS and inertial observations made by the onboard Applanix APX-18 sensor need to processed. Details on how to install POSPac UAV and setup the License Manager are <b>NOT</b> included here. A user should <a href="https://www.applanix.com/contact.htm#tab-id_2D32010C23D94A207E646406EF960545_1">contact</a> the Applanix Technical Support Team with questions or for further assistance. The following steps must be completed in order to configure POSPac UAV to support OpenMMS processing.
 </p>
 <p>
-  1. Make sure to open the application at least once, after installing it. This setups the necessary directories structure on the computer.
+  1. Make sure to open the application at least once after installing it. This setups the necessary directories structure on the computer.
 </p>
 <p>
-  2. 
+  2. With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\ directory, to the C:\ProgramData\Applanix\User Format Profiles\ directory. The ProgramData directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 
 </p>
 <p>
-  3.  
+  3. Next, copy the example <b>OpenMMS WGS84 UTM EGM96.postml</b> project template file from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\ directory, to the C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\ directory. Where {USERNAME} would be replaced with the actual username logged into the computer. The AppData directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
 </p>
 <p>
-  4.  
+  4. Open POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image. Click the <i>OK</i> button to finish.
+  <img src="../images/pospac_options.jpg"> 
 </p>
 <p>
-  5. Within POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image.
-  <img src="../images/pospac_options.jpg">
+  5. Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The example <b>OpenMMS WGS84 UTM EGM96</b> should appear in the list of available project templates. Select the example template, then click the <i>OK</i> button.
+  <img src="../images/pospac_project.jpg">
 </p>
 
 <p align="center"><br>

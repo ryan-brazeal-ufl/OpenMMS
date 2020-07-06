@@ -82,11 +82,13 @@ Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloud
 <p>
 For Windows OS users who also have a NVidia Graphics Card with CUDA processing capabilities installed in their computer, a few extra Python dependencies need to be installed. They can be installed by executing the <b>3_python3_dep_install_CUDA.bat</b> file in the install/Windows OS subdirectory. The following lists the Python3 dependency installations required to support NVidia CUDA GPU processing in the OpenMMS Applications (where possible).
 </p>
+
 ```
 pip install pycuda
 pip install scikit-cuda
 pip install -e git://github.com/lebedov/scikit-cuda#egg=scikit-cuda
 ```
+
 <p>
 The Python3 CUDA related dependencies, in-turn rely on the NVidia CUDA Toolkit, which is provided by NVidia directly. Currently, versions 10.0 to 11.0 of the Toolkit have been tested to work with the respective OpenMMS applications. A user can download, and then install, the NVidia CUDA Tookit from <a href="https://developer.nvidia.com/cuda-toolkit-archive">HERE</a>. The default installation options/settings should be ok to use.
 </p>

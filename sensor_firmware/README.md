@@ -8,7 +8,7 @@
 <p align="center">
 <img src="../images/openmms_os.png">
 </p>
-<p><b>The OMOS image is ~4GB in size, and therefore too big to include it here on GitHub. View the <a href="https://www.openmms.org/wp-content/uploads/html/openmms_software.html#openmms-operating-system-omos">OpenMMS OMOS</a> section at https://www.openmms.org to download the latest image file, how easy is that! </b></p>
+<p><b>The OMOS image is ~4GB in size, and therefore too big to include it here on GitHub. View the <a href="https://www.openmms.org/wp-content/uploads/html/openmms_software.html#openmms-operating-system-omos">OMOS</a> section at the <a href="https://www.openmms.org">OpenMMS website</a> to download the latest image file, how easy is that! </b></p>
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">
 </p>

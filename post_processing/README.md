@@ -137,6 +137,12 @@ In order to produce the highest quality dataset for the positions and orientatio
   <b>5.</b> Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The example <b>OpenMMS WGS84 UTM EGM96</b> should appear in the list of available project templates. Select the example template, then click the <i>OK</i> button.
 </p>
 <p align="center"><img width="35%" src="../images/pospac_project.jpg"></p>
+<p>
+  <b>6.</b> On the <i>Project</i> Tab, click on <i>Project Settings</i>. In the left column of the Project Settings dialog, click on <i>Export</i>, and then click on <i>Settings</i>. Make sure that <i>Output Format</i> dropbox shows <b>OpenMMS_Export</b>. Next, in the left column click on <i>Camera</i>, and then click on <i>Exterior Orientation</i>. Make sure that <i>Output Format</i> dropbox shows <b>OpenMMS_Camera</b>.
+</p>
+
+| <img src="../images/pospac_export_settings.jpg"> | <img src="../images/pospac_camera_settings.jpg"> |
+|--------------------------------------------------|--------------------------------------------------|
 
 <hr>
 <p align="center"><br>

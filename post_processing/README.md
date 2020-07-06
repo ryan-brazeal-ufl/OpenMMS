@@ -42,12 +42,12 @@
 <h3>Installation</h3>
 
 <p>
-Installing OpenMMS Open-Source Software (OpenMMS_OSS) is very simple, and very primitive at the current time. The downloaded OpenMMS.zip file needs to be extracted to the root drive of a computer. This means the C:\ drive for Windows computers, and the / drive for Mac computers (reachable via the Macintosh HD location in Finder), see the images below.
+Installing OpenMMS Open-Source Software (OpenMMS_OSS) is very simple, and very primitive at the current time. The downloaded OpenMMS.zip file needs to be extracted to the root drive of a computer. This means the C:\ drive for Windows computers, and the / drive for Mac computers (reachable via the Macintosh HD location in Finder), see the images below. **DO NOT CHANGE THE NAME OF ANY DIRECTORY OR FILE!**
 </p>
 
-| Installation Locations for OpenMMS Directory |
-|-------------------|--------------------------|
-| <img src="../images/win_root.jpg"> | <img src="../images/mac_root.png"> |
+| Install Location on Windows OS | Install Location on Mac OS |
+|--------------------------------|----------------------------|
+| <img width="100%" src="../images/win_root.jpg"> | <img width="100%" src="../images/mac_root.png"> |
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

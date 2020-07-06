@@ -14,11 +14,11 @@
   
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger |
 | --------------------|-----------------------|------------------------|
-| <a href="./code/openmms_pcap_check.py">OpenMMS PCAP Check.py</a> | 1 | 2 |
-| <a href="./code/openmms_traj_convert.py">OpenMMS TRAJ Convert.py</a> | 1 | 2 |
-| <a href="./code/openmms_georeference.py">OpenMMS Georeference.py</a> | 1 | 2 |
-| <a href="./code/openmms_preprocess_images.py">OpenMMS Preprocess Images.py</a> | 1 | 2 |
-| <a href="./code/openmms_colorize.py">OpenMMS Colorize.py</a> | 1 | 2 |
+| <a href="./code/openmms_pcap_check.py">openmms_pcap_check.py</a> | <a href="./win_batch_files/1_pcap_check.bat">1_pcap_check.bat</a> | <a href="./mac_bash_files/1_pcap_check">1_pcap_check</a> |
+| <a href="./code/openmms_traj_convert.py">openmms_traj_convert.py</a> | <a href="./win_batch_files/2_traj_convert.bat">2_traj_convert.bat</a> | <a href="./mac_bash_files/2_traj_convert">2_traj_convert</a> |
+| <a href="./code/openmms_georeference.py">openmms_georeference.py</a> | <a href="./win_batch_files/3_quick_georef_WGS84_UTM13.bat">3_quick_georef_WGS84_UTM13.bat</a> <br> <a href="./win_batch_files/4_verbose_georef_WGS84_UTM13.bat">4_verbose_georef_WGS84_UTM13.bat</a> <br> <a href="./win_batch_files/6_full_georef_WGS84_UTM13.bat">6_full_georef_WGS84_UTM13.bat</a> | <a href="./mac_bash_files/3_quick_georef_WGS84_UTM13">3_quick_georef_WGS84_UTM13</a> <br> <a href="./mac_bash_files/4_verbose_georef_WGS84_UTM13">4_verbose_georef_WGS84_UTM13</a> <br> <a href="./mac_bash_files/6_full_georef_WGS84_UTM13">6_full_georef_WGS84_UTM13</a> |
+| <a href="./code/openmms_preprocess_images.py">openmms_preprocess_images.py</a> | <a href="./win_batch_files/7_preprocess_images.bat">7_preprocess_images.bat</a> | <a href="./mac_bash_files/7_preprocess_images">7_preprocess_images</a> |
+| <a href="./code/openmms_colorize.py">openmms_colorize.py</a> | <a href="./win_batch_files/8_colorize_las.bat">8_colorize_las.bat</a> | <a href="./mac_bash_files/8_colorize_las">8_colorize_las</a> |
 
 <h3>Sensor Calibration Applications</h3>
 
@@ -26,9 +26,9 @@
 
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger | 
 | --------------------|-----------------------|----------------------- |
-| <a href="./code/openmms_vlp16_calibration.py">OpenMMS VLP-16 Calibration.py</a> | 1 | 2 |
-| <a href="./code/openmms_vlp16_calibration_CUDA.py">OpenMMS VLP-16 Calibration (CUDA).py</a> | 1 | 2 |
-| <a href="./code/openmms_lever_cal.xlsx">OpenMMS Lever-arm Calibration.xlsx</a> | 1 | 2 |
+| <a href="./code/openmms_vlp16_calibration.py">openmms_vlp16_calibration.py</a> | <a href="./win_batch_files/5_vlp16_calibration.bat">5_vlp16_calibration.bat</a> | <a href="./mac_bash_files/5_vlp16_calibration">5_vlp16_calibration</a> |
+| <a href="./code/openmms_vlp16_calibration_CUDA.py">openmms_vlp16_calibration_CUDA.py</a> | <a href="./win_batch_files/5_vlp16_calibration_CUDA.bat">5_vlp16_calibration_CUDA.bat</a> | N/A |
+| <a href="./code/openmms_lever_cal.xlsx">openmms_lever_cal.xlsx</a> | N/A | N/A |
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

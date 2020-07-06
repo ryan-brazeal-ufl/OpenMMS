@@ -40,14 +40,39 @@
 
 <hr>
 <h3>Installation</h3>
-
+<h4>1. Python3</h4>
 <p>
-Installing OpenMMS Open-Source Software (OpenMMS_OSS) is very simple, and very primitive at the current time. The downloaded OpenMMS.zip file needs to be extracted to the root drive of a computer. This means the C:\ drive for Windows computers, and the / drive for Mac computers (reachable via the Macintosh HD location in Finder), see the images below. **DO NOT CHANGE THE NAME OF ANY DIRECTORY OR FILE!**
+Download the latest Python 3.7.X release from the <a href="https://www.python.org/downloads">Python.org</a> website and install it on a computer. Ensure that the python executable location is added to the computer's PATH variable (there should be a checkbox within the Python installer).
+</p>
+<h4>2. OpenMMS Applications</h4>
+<p>
+Installing OpenMMS Open-Source Software (OpenMMS_OSS) is very simple, and very primitive at the current time. The downloaded OpenMMS.zip file needs to be extracted to the root drive of a computer. This means the C:\ drive for Windows computers, and the / drive for Mac computers (reachable via the Macintosh HD location in Finder), see the images below. <b>DO NOT CHANGE THE NAME OF ANY DIRECTORY OR FILE!</b>
 </p>
 
 | Install Location on Windows OS | Install Location on Mac OS |
 |--------------------------------|----------------------------|
 | <img width="100%" src="../images/win_root.jpg"> | <img width="100%" src="../images/mac_root.png"> |
+
+<h4>3. Python3 Dependencies</h4>
+<p>
+  Browse to the OpenMMS directory installed on the root drive and open the <b>install</b> subdirectory. Open the appropriate subdirectory based on the computer OS, and lastly execute the <b>1_python3_dep_install</b> file. A commandline/terminal window should open and begin 'pip installing' the needed dependencies. The following lists the dependency installations required to support the OpenMMS Applications.
+</p>
+
+```
+pip install colorama
+pip install pyproj
+pip install pillow
+pip install tqdm
+pip install numpy
+pip install laspy
+pip install scipy
+pip install matplotlib
+pip install numba
+pip install numdifftools
+pip install opencv-python
+pip install scikit-learn
+```
+
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

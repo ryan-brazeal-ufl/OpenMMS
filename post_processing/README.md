@@ -17,7 +17,7 @@
 <hr>
 <h3>Data Processing Applications Overview</h3>
 
-<p>The following command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible.</p>
+<p>The following command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible. The trigger files for both Windows and Mac computers are also shown here for reference and exploration. The trigger files are a key part of the current OpenMMS software, and provide an easy-to-use and systematic approach to the complex numerical computations that are involved with producing high quality Mobile Mapping datasets. A complete explanation and demonstration of the OpenMMS processing approach can be found on the OpenMMS website.</p>
   
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger |
 | --------------------|-----------------------|------------------------|
@@ -75,7 +75,7 @@ pip install scikit-learn
 
 <h4>4. CloudCompare </h4>
 <p>
-Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloudcompare.org>CloudCompare</a> open-source 3D point cloud and mesh processing software, for specific visualization and analysis purposes. Download and install the latest version of CloudCompare, and use the default installation settings.
+Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloudcompare.org">CloudCompare</a> open-source 3D point cloud and mesh processing software, for specific visualization and analysis purposes. Download and install the latest version of CloudCompare from <a href="https://www.cloudcompare.org/release/index.html">HERE</a>, and use the default installation settings.
 </p>
 
 <h4>5. ***OPTIONAL*** NVidia CUDA Toolkit (Windows OS Users Only!)</h4>

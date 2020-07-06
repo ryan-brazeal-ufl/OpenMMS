@@ -4,7 +4,7 @@
 
 <h2>OpenMMS Post-Processing Software</h2>
 
-<b>Click <a href="./OpenMMS.zip">HERE</a> to download a compressed .zip file that contains all the OpenMMS post-processing software and instructions. </b>
+<b>Click <a href="https://github.com/ryan-brazeal-ufl/OpenMMS/raw/master/post_processing/OpenMMS.zip">HERE</a> to download a compressed .zip file that contains all the OpenMMS post-processing software and instructions. </b>
 
 | IMPORTANT NOTES | 
 | ---------------|

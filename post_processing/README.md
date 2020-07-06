@@ -121,7 +121,7 @@ In addition to all the foundational Python packages, many thanks go to the <a hr
 In order to produce the highest quality dataset for the positions and orientations of the OpenMMS sensor over the course of a data collection campaign, the GNSS and inertial observations made by the onboard Applanix APX-18 sensor need to processed. Details on how to install POSPac UAV and setup the License Manager are <b>NOT</b> included here. A user should <a href="https://www.applanix.com/contact.htm#tab-id_2D32010C23D94A207E646406EF960545_1">contact</a> the Applanix Technical Support Team with questions or for further assistance. The following steps must be completed in order to configure POSPac UAV to support OpenMMS processing.
 </p>
 <p>
-  <b>1.</b> Make sure to open the application at least once after installing it. This setups the necessary directories structure on the computer.
+  <b>1.</b> Make sure to open the application at least once after installing it. This sets up the necessary directories structure on the computer.
 </p>
 <p>
   <b>2.</b> With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\ directory, to the C:\ProgramData\Applanix\User Format Profiles\ directory. The ProgramData directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 

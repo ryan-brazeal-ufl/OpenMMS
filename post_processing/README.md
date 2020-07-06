@@ -55,7 +55,7 @@ Installing OpenMMS Open-Source Software (OpenMMS_OSS) is very simple, and very p
 
 <h4>3. Python3 Dependencies</h4>
 <p>
-  Browse to the OpenMMS directory installed on the root drive and open the <b>install</b> subdirectory. Open the appropriate subdirectory based on the computer OS, and lastly execute the <b>1_python3_dep_install</b> file. A commandline/terminal window should open and begin 'pip installing' the needed dependencies. The following lists the Python3 dependency installations required to support the OpenMMS Applications.
+  Browse to the OpenMMS directory installed on the root drive and open the <b>install</b> subdirectory. Open the appropriate subdirectory based on the computer OS, and lastly execute the <b>1_python3_dep_install(.bat)</b> file. A commandline/terminal window should open and begin 'pip installing' the necessary dependencies. The following lists the Python3 dependency installations required to support the OpenMMS Applications.
 </p>
 
 ```
@@ -72,15 +72,32 @@ pip install numdifftools
 pip install opencv-python
 pip install scikit-learn
 ```
+
+<h4>4. CloudCompare </h4>
 <p>
-  For Windows OS users who also have a NVidia Graphics Card with CUDA processing capabilities installed in their computer, a few extra Python dependencies need to be installed. They can be installed by executing the <b>3_python3_dep_install_CUDA.bat</b> file in the install/Windows OS subdirectory. The following lists the Python3 dependency installations required to support NVidia CUDA GPU processing in the OpenMMS Applications (where possible).
+Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloudcompare.org>CloudCompare</a> open-source 3D point cloud and mesh processing software, for specific visualization and analysis purposes. Download and install the latest version of CloudCompare, and use the default installation settings.
 </p>
 
+<h4>5. ***OPTIONAL*** NVidia CUDA Toolkit (Windows OS Users Only!)</h4>
+<p>
+For Windows OS users who also have a NVidia Graphics Card with CUDA processing capabilities installed in their computer, a few extra Python dependencies need to be installed. They can be installed by executing the <b>3_python3_dep_install_CUDA.bat</b> file in the install/Windows OS subdirectory. The following lists the Python3 dependency installations required to support NVidia CUDA GPU processing in the OpenMMS Applications (where possible).
+</p>
 ```
 pip install pycuda
 pip install scikit-cuda
 pip install -e git://github.com/lebedov/scikit-cuda#egg=scikit-cuda
 ```
+<p>
+The Python3 CUDA related dependencies, in-turn rely on the NVidia CUDA Toolkit, which is provided by NVidia directly. Currently, versions 10.0 to 11.0 of the Toolkit have been tested to work with the respective OpenMMS applications. A user can download, and then install, the NVidia CUDA Tookit from <a href="https://developer.nvidia.com/cuda-toolkit-archive">HERE</a>. The default installation options/settings should be ok to use.
+</p>
+<p>
+However, the NVidia CUDA Toolkit requires that an appropriate version of the Microsoft Visual C++ Compiler be installed on the computer. A user can download, and then install, the MSVS Build Tools from <a href="https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16">HERE</a>. When running the installer program, make sure that the Visual C++ Build Tools are selected to be installed (there should be a checkbox option under the Workloads section of the installer).
+</p>
+<p>
+  NVidia has an <a href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html">Installation Guide for Windows</a> that provides more details on installing, testing, and utilizing the CUDA Toolkit.
+</p>
+
+
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

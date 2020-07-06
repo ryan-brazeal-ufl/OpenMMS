@@ -40,15 +40,15 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 
 <p>The following command-line-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed, and the lever-arm offset values are estimated and displayed. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
 
+<p align="center"><br>
+  <img width="22%" src="../images/pp_apps3.jpg">
+</p>
+
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger | 
 | --------------------|-----------------------|----------------------- |
 | <a href="./code/openmms_vlp16_calibration.py">openmms_vlp16_calibration.py</a> | <a href="./win_batch_files/5_vlp16_calibration.bat">5_vlp16_calibration.bat</a> | <a href="./mac_bash_files/5_vlp16_calibration">5_vlp16_calibration</a> |
 | <a href="./code/openmms_vlp16_calibration_CUDA.py">openmms_vlp16_calibration_CUDA.py</a> | <a href="./win_batch_files/5_vlp16_calibration_CUDA.bat">5_vlp16_calibration_CUDA.bat</a> | N/A |
 | <a href="https://github.com/ryan-brazeal-ufl/OpenMMS/raw/master/post_processing/code/openmms_lever_cal.xlsx">openmms_lever_cal.xlsx</a> | N/A | N/A |
-
-<p align="center"><br>
-  <img width="22%" src="../images/pp_apps3.jpg">
-</p>
 
 <hr>
 <h3>Installation</h3>
@@ -123,23 +123,24 @@ In addition to all the foundational Python packages, many thanks go to the <a hr
 In order to produce the highest quality dataset for the positions and orientations of the OpenMMS sensor over the course of a data collection campaign, the GNSS and inertial observations made by the onboard Applanix APX-18 sensor need to processed. Details on how to install POSPac UAV and setup the License Manager are <b>NOT</b> included here. A user should <a href="https://www.applanix.com/contact.htm#tab-id_2D32010C23D94A207E646406EF960545_1">contact</a> the Applanix Technical Support Team with questions or for further assistance. The following steps must be completed in order to configure POSPac UAV to support OpenMMS processing.
 </p>
 <p>
-  1. Make sure to open the application at least once after installing it. This setups the necessary directories structure on the computer.
+  <b>1.</b> Make sure to open the application at least once after installing it. This setups the necessary directories structure on the computer.
 </p>
 <p>
-  2. With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\ directory, to the C:\ProgramData\Applanix\User Format Profiles\ directory. The ProgramData directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 
+  <b>2.</b> With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\ directory, to the C:\ProgramData\Applanix\User Format Profiles\ directory. The ProgramData directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 
 </p>
 <p>
-  3. Next, copy the example <b>OpenMMS WGS84 UTM EGM96.postml</b> project template file from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\ directory, to the C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\ directory. Where {USERNAME} would be replaced with the actual username logged into the computer. The AppData directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
+  <b>3.</b> Next, copy the example <b>OpenMMS WGS84 UTM EGM96.postml</b> project template file from the C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\ directory, to the C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\ directory. Where {USERNAME} would be replaced with the actual username logged into the computer. The AppData directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
 </p>
 <p>
-  4. Open POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image. Click the <i>OK</i> button to finish.
-  <img src="../images/pospac_options.jpg"> 
+  <b>4.</b> Open POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image. Click the <i>OK</i> button to finish. 
 </p>
+<p align="center"><img width="80%" src="../images/pospac_options.jpg"></p>
 <p>
-  5. Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The example <b>OpenMMS WGS84 UTM EGM96</b> should appear in the list of available project templates. Select the example template, then click the <i>OK</i> button.
-  <img src="../images/pospac_project.jpg">
+  <b>5.</b> Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The example <b>OpenMMS WGS84 UTM EGM96</b> should appear in the list of available project templates. Select the example template, then click the <i>OK</i> button.
 </p>
+<p align="center"><img width="80%" src="../images/pospac_project.jpg"></p>
 
+<hr>
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">
 </p>

@@ -2,7 +2,7 @@
   <img width="75%" src="../images/openmms_ascii_logo.jpg">
 </p>
 
-<h2>OpenMMS Post-Processing Software</h2>
+<h1>OpenMMS Post-Processing Software</h1>
 
 <b>Click <a href="https://github.com/ryan-brazeal-ufl/OpenMMS/raw/master/post_processing/OpenMMS.zip">HERE</a> to download a compressed (.zip) file that contains all the OpenMMS post-processing software and instructions. </b>
 
@@ -14,9 +14,10 @@
 <p align="center">
 <img src="../images/openmms_oss.png">
 </p>
+<hr>
+<h3>Data Processing Applications</h3>
 
 <p>The following command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible.</p>
-
   
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger |
 | --------------------|-----------------------|------------------------|

@@ -85,6 +85,8 @@ pip install opencv-python
 pip install scikit-learn
 ```
 
+**A huge thank-you goes out to all the supporters and contributors of these awesome Python packages! This project would not have been possible without these packages providing a solid foundation!**
+
 <h4>4. CloudCompare </h4>
 <p>
 Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloudcompare.org">CloudCompare</a> open-source 3D point cloud and mesh processing software, for specific visualization and analysis purposes. Download and install the latest version of CloudCompare from <a href="https://www.cloudcompare.org/release/index.html">HERE</a>, and use the default installation settings.
@@ -110,8 +112,12 @@ However, the NVidia CUDA Toolkit requires that an appropriate version of the Mic
 <p>
   NVidia has an <a href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html">Installation Guide for Windows</a> that provides more details on installing, testing, and utilizing the CUDA Toolkit.
 </p>
-
-
+<hr>
+<h3>Thanks to rapidlasso!</h3>
+<p>
+In addition to all the foundational Python packages, many thanks goes to the <a href="https://rapidlasso.com/">rapidlasso</a> team for the creation of <a href="https://rapidlasso.com/lastools/">LAStools</a>. The OpenMMS Georeferencing application utilizes the las2las binaries (for Windows and for Mac/Linux) for efficiently merging multiple .LAS files together, and for assigning the point cloud's coordinate system within the file's header section.
+</p>
+<hr>
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

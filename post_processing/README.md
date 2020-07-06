@@ -4,6 +4,8 @@
 
 <h2>OpenMMS Post-Processing Software</h2>
 
+<b>Click <a href="./OpenMMS.zip">HERE</a> to download a compressed .zip file that contains all the OpenMMS post-processing software and instructions. </b>
+
 | IMPORTANT NOTES | 
 | ---------------|
 | The current OpenMMS Hardware utilizes an Applanix GNSS-INS sensor, and therefore requires the use of the Applanix POSPac software application in order to process the .T04 file collected from an OpenMMS sensor. **Currently, POSPac can ONLY be installed within a Windows OS environment.** |

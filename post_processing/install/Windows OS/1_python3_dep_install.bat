@@ -2,7 +2,6 @@ pip install colorama
 pip install pyproj
 pip install pillow
 pip install tqdm
-pip install pyautogui
 pip install numpy
 pip install laspy
 pip install scipy

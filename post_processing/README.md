@@ -38,7 +38,7 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 <hr>
 <h3>Sensor Calibration Applications Overview</h3>
 
-<p>The following command-line-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet template is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed and the lever-arm offset values are estimated. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
+<p>The following command-line-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed, and the lever-arm offset values are estimated and displayed. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
 
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger | 
 | --------------------|-----------------------|----------------------- |
@@ -92,7 +92,7 @@ pip install scikit-learn
 Currently, the OpenMMS project utilizes the inspiring <a href="https://www.cloudcompare.org">CloudCompare</a> open-source 3D point cloud and mesh processing software, for specific visualization and analysis purposes. Download and install the latest version of CloudCompare from <a href="https://www.cloudcompare.org/release/index.html">HERE</a>, and use the default installation settings.
 </p>
 
-<h4>5. ***OPTIONAL*** NVidia CUDA Processing (Windows OS Users Only!)</h4>
+<h4>5. ***OPTIONAL*** NVidia CUDA Processing (Windows Only!)</h4>
 <p>
 For Windows OS users who also have a NVidia Graphics Card with CUDA processing capabilities installed in their computer, a few extra Python dependencies need to be installed. They can be installed by executing the <b>3_python3_dep_install_CUDA.bat</b> file in the install/Windows OS subdirectory. The following lists the Python3 dependency installations required to support NVidia CUDA GPU processing in the OpenMMS Applications (where possible).
 </p>
@@ -118,6 +118,26 @@ However, the NVidia CUDA Toolkit requires that an appropriate version of the Mic
 In addition to all the foundational Python packages, many thanks go to the <a href="https://rapidlasso.com/">rapidlasso</a> team for the creation of <a href="https://rapidlasso.com/lastools/">LAStools</a>. The OpenMMS Georeferencing application utilizes the <a href="https://rapidlasso.com/lastools/las2las/">las2las</a> binaries (for Windows and for Mac/Linux) for efficiently merging multiple .LAS files together, and for assigning the point cloud's coordinate system within the file's header.
 </p>
 <hr>
+<h3>Getting Started with Applanix POSPac UAV GNSS-Inertial Post-Processing Software (Windows Only!)</h3>
+<p>
+In order to produce the highest quality dataset for the positions and orientations of the OpenMMS sensor over the course of a data collection campaign, the GNSS and inertial observations made by the onboard Applanix APX-18 sensor need to processed. Details on how to install POSPac UAV and setup the License Manager are <b>NOT</b> included here. A user should <a href="https://www.applanix.com/contact.htm#tab-id_2D32010C23D94A207E646406EF960545_1">contact</a> the Applanix Technical Support Team with questions or for further assistance. The following steps must be completed in order to configure POSPac UAV to support OpenMMS processing.
+</p>
+<p>
+  1. Make sure to open the application at least once, after installing it. This setups the necessary directories structure on the computer.
+</p>
+<p>
+  2. 
+</p>
+<p>
+  3.  
+</p>
+<p>
+  4.  
+</p>
+<p>
+  5. Within POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image.
+  <img src="../images/pospac_options.jpg">
+</p>
 
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

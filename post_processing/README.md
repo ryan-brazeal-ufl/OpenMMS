@@ -40,9 +40,7 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 
 <p>The following command-line-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed, and the lever-arm offset values are estimated and displayed. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
 
-<p align="center"><br>
-  <img width="22%" src="../images/pp_apps3.jpg">
-</p>
+<p align="center"><img width="22%" src="../images/pp_apps3.jpg"></p>
 
 | OpenMMS Application | Windows Batch Trigger | Mac/Linux Bash Trigger | 
 | --------------------|-----------------------|----------------------- |
@@ -134,11 +132,11 @@ In order to produce the highest quality dataset for the positions and orientatio
 <p>
   <b>4.</b> Open POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image. Click the <i>OK</i> button to finish. 
 </p>
-<p align="center"><img width="80%" src="../images/pospac_options.jpg"></p>
+<p align="center"><img width="70%" src="../images/pospac_options.jpg"></p>
 <p>
   <b>5.</b> Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The example <b>OpenMMS WGS84 UTM EGM96</b> should appear in the list of available project templates. Select the example template, then click the <i>OK</i> button.
 </p>
-<p align="center"><img width="80%" src="../images/pospac_project.jpg"></p>
+<p align="center"><img width="35%" src="../images/pospac_project.jpg"></p>
 
 <hr>
 <p align="center"><br>

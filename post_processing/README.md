@@ -19,6 +19,10 @@
 <p>
 The following command-line-based Python3 applications are installed on a user's computer, and provide the user with a set of tools for handling all the required MMS data related tasks. The applications have been optimized for performance and speed by utilizing multi-core processing whenever possible.
 </p>
+
+| <img src="../images/pp_apps1.jpg"> | <img src="../images/pp_apps2.jpg"> | <img src="../images/pp_apps4.jpg"> |
+|------------------------------------|------------------------------------|------------------------------------|
+
 <p>
 The trigger files for both Windows and Mac OS are also shown here for reference, and general information. The trigger files are a key part of the current OpenMMS software, and provide an easy-to-use and systematic approach to the complex numerical computations that are involved with producing high quality Mobile Mapping datasets. A complete explanation, and demonstration, of the OpenMMS processing approach can be found on the <a href="https://www.openmms.org">OpenMMS website</a>.
 </p>
@@ -41,6 +45,10 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 | <a href="./code/openmms_vlp16_calibration.py">openmms_vlp16_calibration.py</a> | <a href="./win_batch_files/5_vlp16_calibration.bat">5_vlp16_calibration.bat</a> | <a href="./mac_bash_files/5_vlp16_calibration">5_vlp16_calibration</a> |
 | <a href="./code/openmms_vlp16_calibration_CUDA.py">openmms_vlp16_calibration_CUDA.py</a> | <a href="./win_batch_files/5_vlp16_calibration_CUDA.bat">5_vlp16_calibration_CUDA.bat</a> | N/A |
 | <a href="https://github.com/ryan-brazeal-ufl/OpenMMS/raw/master/post_processing/code/openmms_lever_cal.xlsx">openmms_lever_cal.xlsx</a> | N/A | N/A |
+
+<p align="center"><br>
+  <img width="22%" src="../images/pp_apps3.jpg">
+</p>
 
 <hr>
 <h3>Installation</h3>

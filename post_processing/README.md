@@ -144,6 +144,10 @@ In order to produce the highest quality dataset for the positions and orientatio
 | <img src="../images/pospac_export_settings.jpg"> | <img src="../images/pospac_camera_settings.jpg"> |
 |--------------------------------------------------|--------------------------------------------------|
 
+<p>
+  <b>7.</b> If no errors have been encountered, POSPac UAV has been configured to support the OpenMMS processing approach.
+</p>
+
 <hr>
 <p align="center"><br>
 <img width="60%" src="../images/i_heart_lidar.png">

@@ -56,7 +56,7 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 <h3>Installation</h3>
 <h4>1. Python3</h4>
 <p>
-Download the latest Python 3.7.X release from the <a href="https://www.python.org/downloads">Python.org</a> website and install it on a computer. Ensure that the python executable location is added to the computer's PATH variable (there should be a checkbox within the Python installer) <b>OR,</b> if the user is familiar and comfortable setting up virtual environments, this approach is <b>recommended.</b>
+Download the latest Python 3.7.X release from the <a href="https://www.python.org/downloads">Python.org</a> website and install it on a computer. Ensure that the python executable location is added to the computer's PATH variable (there should be a checkbox within the Python installer) <b>OR,</b> if the user is familiar and comfortable with setting up virtual environments, this approach is <b>recommended.</b>
 </p>
 <h4>2. OpenMMS Applications</h4>
 <p>

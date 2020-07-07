@@ -48,6 +48,10 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 | <a href="./code/openmms_vlp16_calibration_CUDA.py">openmms_vlp16_calibration_CUDA.py</a> | <a href="./win_batch_files/5_vlp16_calibration_CUDA.bat">5_vlp16_calibration_CUDA.bat</a> | N/A |
 | <a href="https://github.com/ryan-brazeal-ufl/OpenMMS/raw/master/post_processing/code/openmms_lever_cal.xlsx">openmms_lever_cal.xlsx</a> | N/A | N/A |
 
+<br>
+<p><b>A detailed boresight calibration procedure for the Sony A6000 camera is COMING SOON... </b>
+</p>
+
 <hr>
 <h3>Installation</h3>
 <h4>1. Python3</h4>

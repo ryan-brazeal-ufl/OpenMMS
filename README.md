@@ -11,7 +11,9 @@
 <hr>
 <h3 align="center">********** PROJECT UPDATES **********</h3>
 <p>
- - GITHUB PUBLICATION IN PROGRESS (started May 5th 2019)
- - Still a work in progress as of June 2020
-<hr>
+ - GitHub Publication started, May 5th, 2019<br>
+ - Development effort to include NVidia GPU CUDA processing within OpenMMS applications started, May 2020<br>
+  - Version 1.3 publication completed, July 7th, 2020<br>
+</p>
+<br>
 <img src="./images/pp_workflow2.jpg">

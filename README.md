@@ -6,7 +6,9 @@
 
 <h2 align="center">AN OPEN-SOURCE SOFTWARE AND HARDWARE PROJECT</h2>
 <p align="center">
-<b>View the <a href="https://www.openmms.org">OpenMMS website</a> for complete project documentation, information and news!</b>
+ <b><a href="./sensor_firmware">OpenMMS Real-Time Sensor Applications</a></b><br>
+ <b><a href="./post_processing">OpenMMS Data Post-Processing Applications</a></b><br><br>
+ <b>View the <a href="https://www.openmms.org">OpenMMS website</a> for complete project documentation, information and news!</b><br>
 </p>
 <hr>
 <h3 align="center">********** PROJECT UPDATES **********</h3>

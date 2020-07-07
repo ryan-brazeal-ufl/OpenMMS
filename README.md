@@ -9,7 +9,7 @@
 <b>View the <a href="https://www.openmms.org">OpenMMS website</a> for complete project documentation, information and news!</b>
 </p>
 <hr>
-<h2 align="center">PROJECT UPDATES</h2>
+<h3 align="center">********** PROJECT UPDATES **********</h3>
 <p>
  - GITHUB PUBLICATION IN PROGRESS (started May 5th 2019)
  - Still a work in progress as of June 2020

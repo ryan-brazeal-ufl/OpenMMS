@@ -2,31 +2,17 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-
 boresight_file="zeros.txt"
-
-outputFile="verbose_pc.las"
-
+output_file="verbose_pc.las"
 start_proc_time="-1"
-
 end_proc_time="-1"
-
 thin_factor="1"
-
 quick_processing="False"
-
 verbose_output="True"
-
-display_plots="True"
-
-useVLP16Calibration="True"
-
+display_plots="False"
+use_vlp16_calibration="True"
 geo_cs="4326"
-
 proj_cs="32613"
-
-
-
 
 counter1=0
 counter2=0
@@ -51,7 +37,7 @@ done
 
 if [ $counter1 = 1 ]; then
   if [ $counter2 = 1 ]; then
-    python /OpenMMS/code/openmms_georeference.py /OpenMMS/code/serf/geo/ /OpenMMS/sys_params/$boresight_file $nav $pcap $outputFile $quick_processing $verbose_output $start_proc_time $end_proc_time $thin_factor $display_plots $geo_cs $proj_cs $DIR $useVLP16Calibration
+    python /OpenMMS/code/openmms_georeference.py /OpenMMS/code/serf/geo/ /OpenMMS/sys_params/$boresight_file $nav $pcap $output_file $quick_processing $verbose_output $start_proc_time $end_proc_time $thin_factor $display_plots $geo_cs $proj_cs $DIR $use_vlp16_calibration
   fi
 fi
 
@@ -70,7 +56,6 @@ fi
 if [ $counter2 -gt 1 ]; then
   echo "More than one NAV text (.txt) file was found in the current directory, only a single .txt file should be present"
 fi
-
 
 echo ""
 read -p "Press Enter to continue ..."

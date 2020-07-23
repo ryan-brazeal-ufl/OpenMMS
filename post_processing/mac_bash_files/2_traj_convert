@@ -2,8 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-
-trajNum=0
+traj_num=0
 traj=none
 
 for f in "$DIR"/*; do
@@ -13,19 +12,19 @@ for f in "$DIR"/*; do
 
   if [[ "$extUP" == "TRAJ" ]]; then
     traj=$f
-    trajNum=$((trajNum+1))
+    traj_num=$((traj_num+1))
   fi
 done
 
-if [ $trajNum = 1 ]; then
+if [ $traj_num = 1 ]; then
   python /OpenMMS/code/openmms_traj_convert.py $traj
 fi
 
-if [ $trajNum = 0 ]; then
+if [ $traj_num = 0 ]; then
   echo "No TRAJ file was found in the current directory"
 fi  
 
-if [ $trajNum -gt 1 ]; then
+if [ $traj_num -gt 1 ]; then
   echo "More than one TRAJ file was found in the current directory, only a single TRAJ file should be present"
 fi
 

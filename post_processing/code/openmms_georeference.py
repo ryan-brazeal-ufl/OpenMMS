@@ -642,32 +642,39 @@ def readCSVNav(filename):
     nav = []
     lastHour = 0
     counter = 0
+    readHeader = False
     dayAdjustment = 0.
+    header_items = []
 
     with open(filename, "r") as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
-            if len(row) > 0:                                    
-                nav.append([float(i) for i in row])
-                
-                timeStr = "{:0.12f}".format(nav[counter][0] / 3600.)
-                decPt = timeStr.find(".")
-                hour = int(timeStr[0:decPt])
-                
-                if (hour - lastHour) < 0:
-                    dayAdjustment = 86400.
-                    dateRollOver = True
-                    hourRollOver += 1
-                elif lastHour - hour < 0 and counter > 0:
-                    hourRollOver += 1
-                lastHour = hour
-                nav[counter][0] += dayAdjustment
-                counter += 1
+            if readHeader:
+                if len(row) > 0:                                    
+                    nav.append([float(i) for i in row])
+                    
+                    timeStr = "{:0.12f}".format(nav[counter][0] / 3600.)
+                    decPt = timeStr.find(".")
+                    hour = int(timeStr[0:decPt])
+                    
+                    if (hour - lastHour) < 0:
+                        dayAdjustment = 86400.
+                        dateRollOver = True
+                        hourRollOver += 1
+                    elif lastHour - hour < 0 and counter > 0:
+                        hourRollOver += 1
+                    lastHour = hour
+                    nav[counter][0] += dayAdjustment
+                    counter += 1
+            else:
+                header_items = list(row)
+                readHeader = True
     
-    return nav, hourRollOver, dateRollOver
+    return nav, hourRollOver, dateRollOver, header_items
 
 
-def navRPH2SinCos(nav, semi_major, eccentricity2, verboseOut):
+def navRPH2SinCos(nav_filename, nav, semi_major, eccentricity2, verboseOut):
+    filePath = Path(nav_filename).parents[0]
     sinLat = []
     cosLat = []
     sinLon = []
@@ -729,13 +736,13 @@ def navRPH2SinCos(nav, semi_major, eccentricity2, verboseOut):
     if verboseOut:
         count = 1
         while True:
-            dirName = "calibration" + str(count)
-            if os.path.isdir(dirName):
+            dirName = filePath / ("calibration" + str(count))
+            if os.path.isdir(str(dirName)):
                 count += 1
             else:
                 os.mkdir(dirName)
                 time.sleep(0.5)
-                verbose_offsets = open(dirName + "\\verbose_offsets.csv","w")
+                verbose_offsets = open(str(dirName / "verbose_offsets.csv"),"w")
                 verbose_offsets.write(str(Xg_offset) + "," + str(Yg_offset) + "," + str(Zg_offset) + "\n")
                 verbose_offsets.close()
                 break
@@ -1263,6 +1270,8 @@ def georef_project(params_filename, nav_filename, pcap_filename, las_filename, l
     
     if runQuick:
         numCores = int(numCores / 2)
+    else:
+        numCores -= 1
         
     if numCores == 0:
         numCores = 1
@@ -1287,7 +1296,7 @@ def georef_project(params_filename, nav_filename, pcap_filename, las_filename, l
             print("\n\n********************* FULL LIDAR POINT CLOUD PROCESSING HAS STARTED ********************")
             sys.stdout = logFile
     
-        #read in boresight parameters for specific UAS-Lidar system being used
+        #read in boresight parameters for specific system being used
         params = []
         with open(params_filename) as paramsfile:
             for line in nonblank_lines(paramsfile):
@@ -1297,7 +1306,7 @@ def georef_project(params_filename, nav_filename, pcap_filename, las_filename, l
         paramsPath = Path(params_filename)
         paramsName = paramsPath.name
         print("\n            Software Version: " + versionNum)
-        print("\n            UAS-Lidar System Parameters File -> " + str(paramsName))
+        print("\n            System Parameters File -> " + str(paramsName))
         print("                Boresight X [deg]: " + str(params[0]))
         print("                Boresight Y [deg]: " + str(params[1]))
         print("                Boresight Z [deg]: " + str(params[2]))        
@@ -1305,7 +1314,7 @@ def georef_project(params_filename, nav_filename, pcap_filename, las_filename, l
 
         print("\n            Processing Log File -> " + log_filename)
         print("\n            Software Version: " + versionNum)
-        print("\n            UAS-Lidar System Parameters File -> " + str(paramsName))
+        print("\n            System Parameters File -> " + str(paramsName))
         print("                Boresight X [deg]: " + str(params[0]))
         print("                Boresight Y [deg]: " + str(params[1]))
         print("                Boresight Z [deg]: " + str(params[2]))
@@ -1316,7 +1325,7 @@ def georef_project(params_filename, nav_filename, pcap_filename, las_filename, l
         azimuth_corrections = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
         distance_corrections = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
         
-        #read in VLP-16 calibration parameters for specific UAS-Lidar system being used
+        #read in VLP-16 calibration parameters for specific system being used
         if cal_filename != "":
             print("\n            VLP-16 Internal Calibration File -> " + str(cal_filename.name))
             sys.stdout = sys.__stdout__
@@ -1359,8 +1368,8 @@ def georef_project(params_filename, nav_filename, pcap_filename, las_filename, l
         
         start = time.time()
     
-        nav0, hourRollOver, dateRollOver = readCSVNav(nav_filename)
-        navTime, sinLat, cosLat, sinLon, cosLon, EllH, GeoidSep, sinR, cosR, sinP, cosP, sinH, cosH, Xg, Yg, Zg, totalAccel, ZangRate, deltaRoll, Vh, Vu, Xg_offset, Yg_offset, Zg_offset = navRPH2SinCos(nav0, semi_major, eccentricity2, verboseOut)
+        nav0, hourRollOver, dateRollOver, header_items = readCSVNav(nav_filename)
+        navTime, sinLat, cosLat, sinLon, cosLon, EllH, GeoidSep, sinR, cosR, sinP, cosP, sinH, cosH, Xg, Yg, Zg, totalAccel, ZangRate, deltaRoll, Vh, Vu, Xg_offset, Yg_offset, Zg_offset = navRPH2SinCos(nav_filename, nav0, semi_major, eccentricity2, verboseOut)
         
         navinterpSinLat = spinterp.interp1d(navTime, sinLat, axis=0)
         navinterpCosLat = spinterp.interp1d(navTime, cosLat, axis=0)
@@ -1784,16 +1793,16 @@ if __name__ == "__main__":
                                         proc1=subprocess.Popen(args1,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
                                         output,error=proc1.communicate()
                                         
-                                    #Mac OS X - creating CC .bin file works on Mac, but automatically opening it afterwards currently does not (Work In Progress) 
-    #                            else:
-    #                                if os.path.isfile(r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare"):
-    #                                    print("\n            Creating a CloudCompare .BIN point cloud, please wait ...")
-    #                                    print("               TIME SCALAR FIELD OFFSET = " + str(minTimeProc) + " sec.\n")
-    #                                    sys.stdout = sys.__stdout__
-    #                                    print("\n            Creating a CloudCompare .BIN point cloud, please wait ...")
-    #                                    print("               TIME SCALAR FIELD OFFSET = " + str(minTimeProc) + " sec.\n")
-    #                                    sys.stdout = logFile
-    #                                    subprocess.call(r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare -SILENT -AUTO_SAVE OFF -O -GLOBAL_SHIFT AUTO " + str(filePath / (outfileName + fileExtension)) + " -COORD_TO_SF Z -C_EXPORT_FMT BIN -NO_TIMESTAMP -SAVE_CLOUDS", shell=True)
+                                #Mac OS X - creating CC .bin file works on Mac, but automatically opening it afterwards currently does not (Work In Progress) 
+                                else:
+                                    if os.path.isfile(r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare"):
+                                        print("\n            Creating a CloudCompare .BIN point cloud, please wait ...")
+                                        print("               TIME SCALAR FIELD OFFSET = " + str(minTimeProc) + " sec.\n")
+                                        sys.stdout = sys.__stdout__
+                                        print("\n            Creating a CloudCompare .BIN point cloud, please wait ...")
+                                        print("               TIME SCALAR FIELD OFFSET = " + str(minTimeProc) + " sec.\n")
+                                        sys.stdout = logFile
+                                        subprocess.call(r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare -SILENT -AUTO_SAVE OFF -O -GLOBAL_SHIFT AUTO " + str(filePath / (outfileName + fileExtension)) + " -COORD_TO_SF Z -C_EXPORT_FMT BIN -NO_TIMESTAMP -SAVE_CLOUDS", shell=True)
                                 
                                 time.sleep(1)
                                 endPCP = time.time()
@@ -1817,13 +1826,15 @@ if __name__ == "__main__":
                                         args2=[r"C:\Program Files\CloudCompare\CloudCompare.exe", str(filePath / (outfileName + ".bin"))]
                                         proc2=subprocess.Popen(args2,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
                                         
-                                        #Automatically opening a CC .bin on Mac OS X currently does not work (Work In Progress)
-    #                                else:
-    #                                    print("\n  The point cloud is now opening in CloudCompare!")
-    #                                    sys.stdout = sys.__stdout__
-    #                                    print("\n  The point cloud is now opening in CloudCompare!")
-    #                                    sys.stdout = logFile
-    #                                    subprocess.call(r"open " + str(filePath / (outfileName + ".bin")), shell=True)
+                                    #Automatically opening a CC .bin on Mac OS X currently does not work (Work In Progress)
+                                    else:
+                                        print("\n  The point cloud is now opening in CloudCompare!")
+                                        sys.stdout = sys.__stdout__
+                                        print("\n  The point cloud is now opening in CloudCompare!")
+                                        sys.stdout = logFile
+                                        # subprocess.call(r"open " + str(filePath / (outfileName + ".bin")), shell=True)
+                                        args2=[r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare", str(filePath / (outfileName + ".bin"))]
+                                        proc2=subprocess.Popen(args2,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
                                     
                             else:
                                 print("\n***************************** DONE PROCESSING in " + str(round((endPCP - startPCP) / 60.,2)) + " mins. " + "*****************************")

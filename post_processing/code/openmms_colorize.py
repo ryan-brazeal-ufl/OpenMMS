@@ -39,6 +39,7 @@ from tqdm import tqdm
 from pathlib import Path
 from bisect import bisect_left
 from sklearn.neighbors import BallTree
+import warnings
 
 
 def formR1(theta):
@@ -440,15 +441,14 @@ def distImagesChunk(firstCamIndex, notcoloredPtsS, statusD, ptStart, ptEnd, came
     lock.release()
     
 
-def timecolorizeChunk(firstCamIndex, colorBalance, resizeFactor, statusD, colorClassS, imageUsedS, redS, greenS, blueS, lock, chunkID, xS, yS, zS, camera1S, camera2S, camera3S, ptStart, ptEnd, cameraData, rotData, imageDataR, imageDataG, imageDataB):
+def timecolorizeChunk(firstCamIndex, colorBalance, resizeFactor, statusD, colorClassS, imageUsedS, redS, greenS, blueS, lock, chunkID, xS, yS, zS, camera1S, camera2S, camera3S, ptStart, ptEnd, cameraData, rotData, imageDataR, imageDataG, imageDataB, io_values):
+    warnings.filterwarnings("ignore")
     
-    #ILCE-6000_16mm camera internal parameters (from Pix4D database in Pix4D/OpenCV camera model system)
-    cameraPixelSize = 0.00391667                                       #millimetres
-    cameraWidth = int(6000.0 * resizeFactor)                                #pixels
-    cameraHeight = int(4000.0 * resizeFactor)                               #pixels
-    cameraFocal = (15.803372857530 / cameraPixelSize) * resizeFactor   #pixels
-    cameraPPx = cameraWidth / 2.0                                      #pixels
-    cameraPPy = cameraHeight / 2.0                                     #pixels
+    cameraWidth = int(io_values[1] * resizeFactor)
+    cameraHeight = int(io_values[2] * resizeFactor)
+    cameraFocal = (io_values[3]) * resizeFactor
+    cameraPPx = io_values[4] * resizeFactor
+    cameraPPy = io_values[5] * resizeFactor
     
     colorClass = np.frombuffer(colorClassS,'B')
     imageUsed = np.frombuffer(imageUsedS,'H')
@@ -669,15 +669,14 @@ def timecolorizeChunk(firstCamIndex, colorBalance, resizeFactor, statusD, colorC
     lock.release()
     
 
-def distcolorizeChunk(notcoloredPts_length, firstCamIndex, distcolorPointsS, colorBalance, resizeFactor, statusD, colorClassS, imageUsedS, redS, greenS, blueS, lock, chunkID, xS, yS, zS, ptStart, ptEnd, cameraData, rotData, imageDataR, imageDataG, imageDataB):
+def distcolorizeChunk(notcoloredPts_length, firstCamIndex, distcolorPointsS, colorBalance, resizeFactor, statusD, colorClassS, imageUsedS, redS, greenS, blueS, lock, chunkID, xS, yS, zS, ptStart, ptEnd, cameraData, rotData, imageDataR, imageDataG, imageDataB, io_values):
+    warnings.filterwarnings("ignore")
     
-    #ILCE-6000_16mm camera internal parameters (from Pix4D database in Pix4D/OpenCV camera model system)
-    cameraPixelSize = 0.00391667                                       #millimetres
-    cameraWidth = 6000.0 * resizeFactor                                #pixels
-    cameraHeight = 4000.0 * resizeFactor                               #pixels
-    cameraFocal = (15.803372857530 / cameraPixelSize) * resizeFactor   #pixels
-    cameraPPx = cameraWidth / 2.0                                      #pixels
-    cameraPPy = cameraHeight / 2.0                                     #pixels
+    cameraWidth = int(io_values[1] * resizeFactor)
+    cameraHeight = int(io_values[2] * resizeFactor)
+    cameraFocal = (io_values[3]) * resizeFactor
+    cameraPPx = io_values[4] * resizeFactor
+    cameraPPy = io_values[5] * resizeFactor
     
     distcolorPoints = np.frombuffer(distcolorPointsS,'L').reshape((notcoloredPts_length,4))
     
@@ -892,408 +891,457 @@ def distcolorizeChunk(notcoloredPts_length, firstCamIndex, distcolorPointsS, col
     lock.release()
 
 
-def main(currentDir, las_file, temp_las_file, new_las_file, colorizeData, resizeFactor, colorBalance, doDistanceSearch):
+def main(currentDir, las_file, temp_las_file, new_las_file, colorizeData, resizeFactor, colorBalance, doDistanceSearch, io_values):
     
     startPCP = time.time()
-    imgWidth = int(6000.0 * resizeFactor)
-    imgHeight = int(4000.0 * resizeFactor)
+    imgWidth = int(io_values[1] * resizeFactor)
+    imgHeight = int(io_values[2] * resizeFactor)
     
-    print("******************** POINT CLOUD COLORIZATION HAS STARTED (V1.3.0) *********************\n")
-    print("   Please wait, copying the original LAS file: " + las_file.name + "\n")
-    lasFileOrg = laspy.file.File(str(las_file), mode = "r")
+    print("************************** POINT CLOUD COLORIZATION (V1.3.0) ***************************\n")
+
+    lasFileOrg = laspy.file.File(currentDir / las_file, mode = "r")
     
-    hdr = copy.copy(lasFileOrg.header)
-    hdr.version = "1.2"
-    hdr.format = 1.2
-    hdr.data_format_id = 3
-    hdr.pt_dat_format_id = 3
+    record_length = lasFileOrg.point_format.rec_len
     
-    #the following ID fields must be less than or equal to 32 characters in length
-    System_ID = "OpenMMS"
-    Software_ID = "OpenMMS v1.3.0"
+    num_records = len(lasFileOrg.points)
+    total_size = record_length * num_records
+    split_files = 0
+    split_at = [0]
     
-    if len(System_ID) < 32:
-        missingLength = 32 - len(System_ID)
-        for i in range(0,missingLength):
-            System_ID += " "
+    if total_size >= 2**31:
+        ratio = total_size / (2**31-1)
+        split_files = int(np.ceil(ratio))
     
-    if len(Software_ID) < 32:
-        missingLength = 32 - len(Software_ID)
-        for i in range(0,missingLength):
-            Software_ID += " "
+    points_per_file = int(np.floor(num_records / split_files))
+    for i in range(0,split_files-1):
+        split_at.append(points_per_file * (i+1))
+        
+    split_at.append(num_records)
     
-    hdr.system_id = System_ID
-    hdr.software_id = Software_ID
-    
-    lasFileTemp = laspy.file.File(str(temp_las_file), mode = "w", vlrs = lasFileOrg.header.vlrs, header = hdr) #lasFileOrg.header)
-    lasFileTemp.define_new_dimension(name="color_class",data_type=1,description="")
-    lasFileTemp.define_new_dimension(name="image_used",data_type=3,description="")
-    
-    numDims = 0
+    num_dims = 0
     for dim in lasFileOrg.point_format:
-#        print(dim.name)
-        numDims += 1
+        num_dims += 1
     
-    pbar = tqdm(unit=" dimensions", unit_scale=1, total=numDims, desc = "      ", ncols=87)
-    for dimension in lasFileOrg.point_format:
-        dat = lasFileOrg.reader.get_dimension(dimension.name)
-        pbar.update()
-        lasFileTemp.writer.set_dimension(dimension.name, dat)
-
-    pbar.close()
+    new_path = Path(new_las_file).parents[0]
+    new_name = Path(new_las_file).stem
+    new_ext = Path(new_las_file).suffix
+    
     lasFileOrg.close()
-    lasFileTemp.close()
-    time.sleep(1)
-    
-    lasFile = laspy.file.File(str(temp_las_file), mode = "rw")
 
-#    h_vel = lasFile.reader.get_dimension("h_vel")
+    if split_files > 1:
+        print("           IMPORTANT NOTICE: The colorized point cloud data will be exported\n                             into " + str(split_files) + " new LAS files, one for each Data Chunk.")
 
-    numPoints = len(lasFile.X)    
-    scales = lasFile.header.scale
-    offsets = lasFile.header.offset
-    
-    #https://docs.python.org/3/library/array.html#module-array for mp Array datatypes
-    
-    x = mp.RawArray('d',numPoints)
-    y = mp.RawArray('d',numPoints)
-    z = mp.RawArray('d',numPoints)
-    ptTimes = mp.RawArray('d',numPoints)
-    
-    print("\n      Reading X coordinates ...")
-    xt = np.frombuffer(x,'d')
-    xt[:] = lasFile.X * scales[0] + offsets[0]
-    
-    print("      Reading Y coordinates ...")
-    yt = np.frombuffer(y,'d')
-    yt[:] = lasFile.Y * scales[1] + offsets[1]
-    
-    print("      Reading Z coordinates ...\n")
-    zt = np.frombuffer(z,'d')
-    zt[:] = lasFile.Z * scales[2] + offsets[2]
-    
-    ptTimes_t = np.frombuffer(ptTimes,'d')
-    ptTimes_t[:] = lasFile.gps_time
-    
-    print("      Total Points: " + '{:,}'.format(numPoints) + "\n") 
-
-    print("   Reading images metadata ...\n")
-    pbar = tqdm(unit=" images", unit_scale=1, total=len(imagesData), desc = "      ", ncols=87)
-    timeDiffs = []
-    lastTime = 0
-    
-    rotData = []
-    camTimeData = []
-    
-    cameraData = np.zeros((len(colorizeData),3),dtype=np.float)
-    
-    for i in range(0, len(colorizeData)):
-        pbar.update()
+    for k in range(0,split_files):
+        if split_files > 1:
+            print("\n   ---------------------------------  DATA CHUNK " + chr(k+65) + "  ---------------------------------\n")
+        print("   Please wait, copying the necessary data from the original LAS file: " + las_file.name + "\n")
         
-        EOPdata_i = colorizeData[i]
-        R = np.dot(formR3(float(EOPdata_i[7])),np.dot(formR2(float(EOPdata_i[6])),formR1(float(EOPdata_i[5]))))
-        rotData.append(R)
-        camTimeData.append(float(EOPdata_i[0]))
-        cameraData[i,0] = EOPdata_i[2]
-        cameraData[i,1] = EOPdata_i[3]
-        cameraData[i,2] = EOPdata_i[4]
+        lasFileOrg = laspy.file.File(currentDir / las_file, mode = "r")
         
-        if i > 0:
-            timeDiff = float(EOPdata_i[0]) - lastTime
-            if timeDiff < -86390.0:
-                timeDiff += 86400.0
-            elif timeDiff < -3590:
-                timeDiff += 3600.0
-            timeDiffs.append(timeDiff)
+        if split_files > 1:
+            new_las_file = new_path / (new_name + "_" + chr(k+65) + new_ext)
+    
+        hdr = copy.copy(lasFileOrg.header)
+        my_vlrs = copy.copy(lasFileOrg.header.vlrs)
+        
+        hdr.version = "1.2"
+        hdr.format = 1.2
+        hdr.data_format_id = 3
+        hdr.pt_dat_format_id = 3
+        
+        #the following ID fields must be less than or equal to 32 characters in length
+        System_ID = "OpenMMS"
+        Software_ID = "OpenMMS v1.3.0"
+        
+        if len(System_ID) < 32:
+            missingLength = 32 - len(System_ID)
+            for i in range(0,missingLength):
+                System_ID += " "
+        
+        if len(Software_ID) < 32:
+            missingLength = 32 - len(Software_ID)
+            for i in range(0,missingLength):
+                Software_ID += " "
+        
+        hdr.system_id = System_ID
+        hdr.software_id = Software_ID
+        
+        lasFileTemp = laspy.file.File(currentDir / temp_las_file, mode = "w", vlrs = my_vlrs, header = hdr)
+        lasFileTemp.define_new_dimension(name="color_class",data_type=1,description="")
+        lasFileTemp.define_new_dimension(name="image_used",data_type=3,description="")
+        
+        pbar = tqdm(unit=" dimensions", unit_scale=1, total=num_dims, desc = "      ", ncols=87)
+        
+        for dimension in lasFileOrg.point_format:
             
-        lastTime = float(EOPdata_i[0])
-
-    averageCamInterval = np.average(timeDiffs)
+            dat = lasFileOrg.reader.get_dimension(dimension.name)
+            dat = dat[split_at[k]:split_at[k+1]]
+            lasFileTemp.writer.set_dimension(dimension.name, dat)
+            pbar.update()
     
-    pbar.close()
-    print("\n      Average Camera Interval = " + str(round(averageCamInterval,2)) + " secs\n\n")    
+        pbar.close()
+        
+        lasFileOrg.close()
+        lasFileTemp.close()
+        time.sleep(1)
+        
+        lasFile = laspy.file.File(str(temp_las_file), mode = "rw")
     
-    numCores = mp.cpu_count() - 1
-    
-    #debugging purposes
-#    numCores = 4
-    
-    designNum = 0
-    
-    run = True
-    while run:
-        designNum = numPoints // numCores
-        if designNum < 1000000: 
-            numCores -= 1
-            if numCores == 0:
-                numCores = 1
-                run = False
+        numPoints = len(lasFile.X)    
+        scales = lasFile.header.scale
+        offsets = lasFile.header.offset
+        
+        #https://docs.python.org/3/library/array.html#module-array for mp Array datatypes
+        
+        x = mp.RawArray('d',numPoints)
+        y = mp.RawArray('d',numPoints)
+        z = mp.RawArray('d',numPoints)
+        ptTimes = mp.RawArray('d',numPoints)
+        
+        print("\n      Reading X coordinates ...")
+        xt = np.frombuffer(x,'d')
+        xt[:] = lasFile.X * scales[0] + offsets[0]
+        
+        print("      Reading Y coordinates ...")
+        yt = np.frombuffer(y,'d')
+        yt[:] = lasFile.Y * scales[1] + offsets[1]
+        
+        print("      Reading Z coordinates ...\n")
+        zt = np.frombuffer(z,'d')
+        zt[:] = lasFile.Z * scales[2] + offsets[2]
+        
+        ptTimes_t = np.frombuffer(ptTimes,'d')
+        ptTimes_t[:] = lasFile.gps_time
+        
+        if split_files > 1:
+            print("      Total Points: " + '{:,}'.format(numPoints) + "  (Chunk " + str(k+1) + " of " + str(split_files) + ")\n") 
         else:
-            run = False
+            print("      Total Points: " + '{:,}'.format(numPoints) + "\n") 
     
-    chunkIndex = [0]
-    indexCount = designNum
-    for i in range(1,numCores):
-        chunkIndex.append(indexCount)
-        indexCount += designNum
-    chunkIndex.append(numPoints)
-    
-    
-    ######################## FIND CLOSEST IMAGES BY TIME ############################
-    camera1 = mp.RawArray('H',numPoints)
-    camera2 = mp.RawArray('H',numPoints)
-    camera3 = mp.RawArray('H',numPoints)
-    firstCamIndex = -1
-    lastCamIndex = -1
-    
-    with mp.Manager() as manager1: 
-        statusD = manager1.dict()
-        minCam = manager1.dict()
-        maxCam = manager1.dict()
-        lock1 = mp.Lock()
+        print("   Reading images metadata ...\n")
+        pbar = tqdm(unit=" images", unit_scale=1, total=len(imagesData), desc = "      ", ncols=87)
+        timeDiffs = []
+        lastTime = 0
+        
+        rotData = []
+        camTimeData = []
+        
+        cameraData = np.zeros((len(colorizeData),3),dtype=np.float)
+        
+        for i in range(0, len(colorizeData)):
+            pbar.update()
             
-        for i in range(0,len(chunkIndex)-1):
-            statusD[i] = 0
-        
-        procs1 = []
-        for i in range(0,len(chunkIndex)-1):
-            sI = chunkIndex[i]
-            eI = chunkIndex[i+1]
-            proc1 = mp.Process(target=timeImagesChunk,args=(statusD, minCam, maxCam, camera1, camera2, camera3, lock1, i, sI, eI, ptTimes, camTimeData))
-            procs1.append(proc1)
-        
-        message = "   Determining the 3 closest images for each LAS point (time based) ...\n"
-        if colorBalance == 1:
-            message = "   Determining the closest image for each LAS point (time based) ...\n"
-        elif colorBalance == 2:
-            message = "   Determining the 2 closest images for each LAS point (time based) ...\n"
+            EOPdata_i = colorizeData[i]
+            R = np.dot(formR3(float(EOPdata_i[7])),np.dot(formR2(float(EOPdata_i[6])),formR1(float(EOPdata_i[5]))))
+            rotData.append(R)
+            camTimeData.append(float(EOPdata_i[0]))
+            cameraData[i,0] = EOPdata_i[2]
+            cameraData[i,1] = EOPdata_i[3]
+            cameraData[i,2] = EOPdata_i[4]
             
-        print(message)  
-        
-        for iproc in procs1:
-            iproc.start()
-        
-        for iproc in procs1:
-            iproc.join()
-        
-        firstCamIndex = int(np.min(list(minCam.values())))
-        lastCamIndex = int(np.max(list(maxCam.values())))
-        
-        numImages = (lastCamIndex-firstCamIndex)+1
-        firstFile = Path(colorizeData[firstCamIndex][1]).name
-        lastFile = Path(colorizeData[lastCamIndex][1]).name
-        print("\n      First image used: " + firstFile)
-        print("       Last image used: " + lastFile)
-        print("      Num. images used: " + str(numImages))
+            if i > 0:
+                timeDiff = float(EOPdata_i[0]) - lastTime
+                if timeDiff < -86390.0:
+                    timeDiff += 86400.0
+                elif timeDiff < -3590:
+                    timeDiff += 3600.0
+                timeDiffs.append(timeDiff)
+                
+            lastTime = float(EOPdata_i[0])
     
-    
-    ######################## LOADING IMAGES ###############################
-    
-    imageDataR = mp.RawArray('B',int(imgWidth * imgHeight * numImages))
-    imageDataG = mp.RawArray('B',int(imgWidth * imgHeight * numImages))
-    imageDataB = mp.RawArray('B',int(imgWidth * imgHeight * numImages))
-    
-    imageChunks = [firstCamIndex]
-    imgChunkSize = numImages // numCores
-    equalImagesCount = imgChunkSize * numCores
-    diffImage = numImages - equalImagesCount
-    imgCount = firstCamIndex
-    for i in range(1,numCores):
-        adj = 0
-        if diffImage != 0:
-            adj = 1
-            diffImage -= 1
-        imgCount += imgChunkSize + adj
-        imageChunks.append(imgCount)
-    imageChunks.append(firstCamIndex + numImages)
-    
-    with mp.Manager() as manager5: 
-        statusD = manager5.dict()
-        lock5 = mp.Lock()
-            
-        for i in range(0,len(imageChunks)-1):
-            statusD[i] = 0
+        averageCamInterval = np.average(timeDiffs)
         
-        procs2 = []
-        for i in range(0,len(imageChunks)-1):
-            sI = imageChunks[i]
-            eI = imageChunks[i+1]
-            proc2 = mp.Process(target=loadImagesChunk,args=(firstCamIndex, imgWidth, imgHeight, statusD, lock5, i, sI, eI, colorizeData, imageDataR, imageDataG, imageDataB))
-            procs2.append(proc2)
+        pbar.close()
+        print("\n      Average Camera Interval = " + str(round(averageCamInterval,2)) + " secs\n\n")    
         
-        print("\n\n   Loading images data into shared memory (images found to be resized by " + str(resizeFactor) + ") ...\n")
+        numCores = mp.cpu_count() - 1
         
-        for iproc in procs2:
-            iproc.start()
+        #debugging purposes
+    #    numCores = 4
         
-        for iproc in procs2:
-            iproc.join()   
-
-
-    ######################## COLORIZE POINTS BY TIME ############################    
-    colorClass = mp.RawArray('B',numPoints)
-    imageUsed = mp.RawArray('H',numPoints)
-    red = mp.RawArray('B',numPoints)
-    green = mp.RawArray('B',numPoints)
-    blue = mp.RawArray('B',numPoints)
-    
-    with mp.Manager() as manager2:
-        statusD = manager2.dict()
-        lock2 = mp.Lock()
-    
-        for i in range(0,len(chunkIndex)-1):
-            statusD[i] = 0
+        designNum = 0
         
-        procs2 = []
-        for i in range(0,len(chunkIndex)-1):
-            sI = chunkIndex[i]
-            eI = chunkIndex[i+1]
-
-            proc2 = mp.Process(target=timecolorizeChunk,args=(firstCamIndex, colorBalance, resizeFactor, statusD, colorClass, imageUsed, red, green, blue, lock2, i, x, y, z, camera1, camera2, camera3, sI, eI, cameraData, rotData, imageDataR, imageDataG, imageDataB))
-            procs2.append(proc2)
+        run = True
+        while run:
+            designNum = numPoints // numCores
+            if designNum < 1000000: 
+                numCores -= 1
+                if numCores == 0:
+                    numCores = 1
+                    run = False
+            else:
+                run = False
         
-        message = "\n\n   Colorizing LAS points using color balance from 3 closest images (time based) ...\n"
-        if colorBalance == 1:
-            message = "\n\n   Colorizing LAS points using color from closest image (time based) ...\n"
-        elif colorBalance == 2:
-            message = "\n\n   Colorizing LAS points using color balance from 2 closest images (time based) ...\n"
-            
-        print(message)
-        
-        for iproc in procs2:
-            iproc.start()
-        
-        for iproc in procs2:
-            iproc.join()
-    
-    currentcolorClass = np.frombuffer(colorClass,'B')
-    
-    notcoloredPts_length = len(currentcolorClass) - len(np.nonzero(currentcolorClass)[0])
-    notcoloredPts = mp.RawArray('L',notcoloredPts_length)
-    notcoloredPts_t = np.frombuffer(notcoloredPts,'L')
-    
-    ncCount = 0
-    for i in range(0,numPoints):
-        if not currentcolorClass[i]:
-            notcoloredPts_t[ncCount] = i
-            ncCount += 1
-      
-    ######## IMAGES DISTANCE SEARCH AND colorIZATION ########
-    if doDistanceSearch:
-        
-        notcoloredChunks = [0]
-        idealChunkSize = notcoloredPts_length // numCores
-        chunkCount = 0
+        chunkIndex = [0]
+        indexCount = designNum
         for i in range(1,numCores):
-            chunkCount += idealChunkSize
-            notcoloredChunks.append(chunkCount)
-        notcoloredChunks.append(notcoloredPts_length)
+            chunkIndex.append(indexCount)
+            indexCount += designNum
+        chunkIndex.append(numPoints)
         
         
-        ######################## FIND CLOSEST IMAGES BY DISTANCE ############################
-        camera4 = mp.RawArray('H',notcoloredPts_length)
-        camera5 = mp.RawArray('H',notcoloredPts_length)
-        camera6 = mp.RawArray('H',notcoloredPts_length)
+        ######################## FIND CLOSEST IMAGES BY TIME ############################
+        camera1 = mp.RawArray('H',numPoints)
+        camera2 = mp.RawArray('H',numPoints)
+        camera3 = mp.RawArray('H',numPoints)
+        firstCamIndex = -1
+        lastCamIndex = -1
         
-        with mp.Manager() as manager3:
-            statusD = manager3.dict()
-            lock3 = mp.Lock()
-    
-            #Setup Search Tree
-            cameraData_twoDim = cameraData[firstCamIndex:(lastCamIndex+1),0:2]
-            images_ballTree = BallTree(cameraData_twoDim,leaf_size=2)
-            
-            for i in range(0,len(notcoloredChunks)-1):
+        with mp.Manager() as manager1: 
+            statusD = manager1.dict()
+            minCam = manager1.dict()
+            maxCam = manager1.dict()
+            lock1 = mp.Lock()
+                
+            for i in range(0,len(chunkIndex)-1):
                 statusD[i] = 0
             
-            procs3 = []
-            for i in range(0,len(notcoloredChunks)-1):
-                sI = notcoloredChunks[i]
-                eI = notcoloredChunks[i+1]
-                
-                proc3 = mp.Process(target=distImagesChunk,args=(firstCamIndex, notcoloredPts, statusD, sI, eI, camera4, camera5, camera6, lock3, i, x, y, images_ballTree))
-                procs3.append(proc3)
+            procs1 = []
+            for i in range(0,len(chunkIndex)-1):
+                sI = chunkIndex[i]
+                eI = chunkIndex[i+1]
+                proc1 = mp.Process(target=timeImagesChunk,args=(statusD, minCam, maxCam, camera1, camera2, camera3, lock1, i, sI, eI, ptTimes, camTimeData))
+                procs1.append(proc1)
             
-            message = "\n\n   Determining the 3 closest images for each uncolored LAS point (dist. based) ...\n"
+            message = "   Determining the 3 closest images for each LAS point (time based) ...\n"
             if colorBalance == 1:
-                message = "\n\n   Determining the closest image for each uncolored LAS point (dist. based) ...\n"
+                message = "   Determining the closest image for each LAS point (time based) ...\n"
             elif colorBalance == 2:
-                message = "\n\n   Determining the 2 closest images for each uncolored LAS point (dist. based) ...\n"
+                message = "   Determining the 2 closest images for each LAS point (time based) ...\n"
                 
             print(message)  
             
-            for iproc in procs3:
+            for iproc in procs1:
                 iproc.start()
             
-            for iproc in procs3:
+            for iproc in procs1:
                 iproc.join()
-        
-        distcolorPoints = mp.RawArray('L',int(notcoloredPts_length * 4))
-        distcolorPoints_t = np.frombuffer(distcolorPoints,'L').reshape((notcoloredPts_length,4))
-
-        distcolorPoints_t[:,0] = notcoloredPts
-        distcolorPoints_t[:,1] = camera4
-        distcolorPoints_t[:,2] = camera5
-        distcolorPoints_t[:,3] = camera6
-        
-        #sort 2D array based on closest image (2nd column)
-        distcolorPoints_t = distcolorPoints_t[distcolorPoints_t[:,1].argsort()]
-        
-        
-        ######################## COLORIZE POINTS BY DISTANCE ############################
-        
-        with mp.Manager() as manager4:
-            statusD = manager4.dict()
-            lock4 = mp.Lock()
             
-            for i in range(0,len(notcoloredChunks)-1):
+            firstCamIndex = int(np.min(list(minCam.values())))
+            lastCamIndex = int(np.max(list(maxCam.values())))
+            
+            numImages = (lastCamIndex-firstCamIndex)+1
+            firstFile = Path(colorizeData[firstCamIndex][1]).name
+            lastFile = Path(colorizeData[lastCamIndex][1]).name
+            print("\n      First image used: " + firstFile)
+            print("       Last image used: " + lastFile)
+            print("      Num. images used: " + str(numImages))
+        
+        
+        ######################## LOADING IMAGES ###############################
+        
+        imageDataR = mp.RawArray('B',int(imgWidth * imgHeight * numImages))
+        imageDataG = mp.RawArray('B',int(imgWidth * imgHeight * numImages))
+        imageDataB = mp.RawArray('B',int(imgWidth * imgHeight * numImages))
+        
+        imageChunks = [firstCamIndex]
+        imgChunkSize = numImages // numCores
+        equalImagesCount = imgChunkSize * numCores
+        diffImage = numImages - equalImagesCount
+        imgCount = firstCamIndex
+        for i in range(1,numCores):
+            adj = 0
+            if diffImage != 0:
+                adj = 1
+                diffImage -= 1
+            imgCount += imgChunkSize + adj
+            imageChunks.append(imgCount)
+        imageChunks.append(firstCamIndex + numImages)
+        
+        with mp.Manager() as manager5: 
+            statusD = manager5.dict()
+            lock5 = mp.Lock()
+                
+            for i in range(0,len(imageChunks)-1):
                 statusD[i] = 0
             
-            procs4 = []
-            for i in range(0,len(notcoloredChunks)-1):
-                sI = notcoloredChunks[i]
-                eI = notcoloredChunks[i+1]
-
-                proc4 = mp.Process(target=distcolorizeChunk,args=(notcoloredPts_length, firstCamIndex, distcolorPoints, colorBalance, resizeFactor, statusD, colorClass, imageUsed, red, green, blue, lock4, i, x, y, z, sI, eI, cameraData, rotData, imageDataR, imageDataG, imageDataB))
-                procs4.append(proc4)
+            procs2 = []
+            for i in range(0,len(imageChunks)-1):
+                sI = imageChunks[i]
+                eI = imageChunks[i+1]
+                proc2 = mp.Process(target=loadImagesChunk,args=(firstCamIndex, imgWidth, imgHeight, statusD, lock5, i, sI, eI, colorizeData, imageDataR, imageDataG, imageDataB))
+                procs2.append(proc2)
             
+            print("\n\n   Loading images data into shared memory (images found to be resized by " + str(resizeFactor) + ") ...\n")
+            
+            for iproc in procs2:
+                iproc.start()
+            
+            for iproc in procs2:
+                iproc.join()   
     
-            message = "\n\n   Colorizing LAS points using color balance from 3 closest images (dist. based) ...\n"
+    
+        ######################## COLORIZE POINTS BY TIME ############################    
+        colorClass = mp.RawArray('B',numPoints)
+        imageUsed = mp.RawArray('H',numPoints)
+        red = mp.RawArray('B',numPoints)
+        green = mp.RawArray('B',numPoints)
+        blue = mp.RawArray('B',numPoints)
+        
+        with mp.Manager() as manager2:
+            statusD = manager2.dict()
+            lock2 = mp.Lock()
+        
+            for i in range(0,len(chunkIndex)-1):
+                statusD[i] = 0
+            
+            procs2 = []
+            for i in range(0,len(chunkIndex)-1):
+                sI = chunkIndex[i]
+                eI = chunkIndex[i+1]
+    
+                proc2 = mp.Process(target=timecolorizeChunk,args=(firstCamIndex, colorBalance, resizeFactor, statusD, colorClass, imageUsed, red, green, blue, lock2, i, x, y, z, camera1, camera2, camera3, sI, eI, cameraData, rotData, imageDataR, imageDataG, imageDataB, io_values))
+                procs2.append(proc2)
+            
+            message = "\n\n   Colorizing LAS points using color balance from 3 closest images (time based) ...\n"
             if colorBalance == 1:
-                message = "\n\n   Colorizing LAS points using color from closest image (dist. based) ...\n"
+                message = "\n\n   Colorizing LAS points using color from closest image (time based) ...\n"
             elif colorBalance == 2:
-                message = "\n\n   Colorizing LAS points using color balance from 2 closest images (dist. based) ...\n"
+                message = "\n\n   Colorizing LAS points using color balance from 2 closest images (time based) ...\n"
                 
             print(message)
             
-            for iproc in procs4:
+            for iproc in procs2:
                 iproc.start()
             
-            for iproc in procs4:
+            for iproc in procs2:
                 iproc.join()
+        
+        currentcolorClass = np.frombuffer(colorClass,'B')
+        
+        notcoloredPts_length = len(currentcolorClass) - len(np.nonzero(currentcolorClass)[0])
+        notcoloredPts = mp.RawArray('L',notcoloredPts_length)
+        notcoloredPts_t = np.frombuffer(notcoloredPts,'L')
+        
+        ncCount = 0
+        for i in range(0,numPoints):
+            if not currentcolorClass[i]:
+                notcoloredPts_t[ncCount] = i
+                ncCount += 1
+          
+        ######## IMAGES DISTANCE SEARCH AND COLORIZATION ########
+        if doDistanceSearch:
             
-            notcoloredPts_length = len(currentcolorClass) - len(np.nonzero(currentcolorClass)[0])
-             
-    notcoloredPerc = np.round((notcoloredPts_length/len(x))*100.0,2)
+            notcoloredChunks = [0]
+            idealChunkSize = notcoloredPts_length // numCores
+            chunkCount = 0
+            for i in range(1,numCores):
+                chunkCount += idealChunkSize
+                notcoloredChunks.append(chunkCount)
+            notcoloredChunks.append(notcoloredPts_length)
+            
+            
+            ######################## FIND CLOSEST IMAGES BY DISTANCE ############################
+            camera4 = mp.RawArray('H',notcoloredPts_length)
+            camera5 = mp.RawArray('H',notcoloredPts_length)
+            camera6 = mp.RawArray('H',notcoloredPts_length)
+            
+            with mp.Manager() as manager3:
+                statusD = manager3.dict()
+                lock3 = mp.Lock()
+        
+                #Setup Search Tree
+                cameraData_twoDim = cameraData[firstCamIndex:(lastCamIndex+1),0:2]
+                images_ballTree = BallTree(cameraData_twoDim,leaf_size=2)
+                
+                for i in range(0,len(notcoloredChunks)-1):
+                    statusD[i] = 0
+                
+                procs3 = []
+                for i in range(0,len(notcoloredChunks)-1):
+                    sI = notcoloredChunks[i]
+                    eI = notcoloredChunks[i+1]
+                    
+                    proc3 = mp.Process(target=distImagesChunk,args=(firstCamIndex, notcoloredPts, statusD, sI, eI, camera4, camera5, camera6, lock3, i, x, y, images_ballTree))
+                    procs3.append(proc3)
+                
+                message = "\n\n   Determining the 3 closest images for each uncolored LAS point (dist. based) ...\n"
+                if colorBalance == 1:
+                    message = "\n\n   Determining the closest image for each uncolored LAS point (dist. based) ...\n"
+                elif colorBalance == 2:
+                    message = "\n\n   Determining the 2 closest images for each uncolored LAS point (dist. based) ...\n"
+                    
+                print(message)  
+                
+                for iproc in procs3:
+                    iproc.start()
+                
+                for iproc in procs3:
+                    iproc.join()
+            
+            distcolorPoints = mp.RawArray('L',int(notcoloredPts_length * 4))
+            distcolorPoints_t = np.frombuffer(distcolorPoints,'L').reshape((notcoloredPts_length,4))
     
-    if len(notcoloredPts):
-        print("\n\n   WARNING: (" + str(notcoloredPerc) + "%) " + '{:,}'.format(notcoloredPts_length) + " points were not colorized ...\n")
+            distcolorPoints_t[:,0] = notcoloredPts
+            distcolorPoints_t[:,1] = camera4
+            distcolorPoints_t[:,2] = camera5
+            distcolorPoints_t[:,3] = camera6
+            
+            #sort 2D array based on closest image (2nd column)
+            distcolorPoints_t = distcolorPoints_t[distcolorPoints_t[:,1].argsort()]          
+            
+            ######################## COLORIZE POINTS BY DISTANCE ############################
+            
+            with mp.Manager() as manager4:
+                statusD = manager4.dict()
+                lock4 = mp.Lock()
+                
+                for i in range(0,len(notcoloredChunks)-1):
+                    statusD[i] = 0
+                
+                procs4 = []
+                for i in range(0,len(notcoloredChunks)-1):
+                    sI = notcoloredChunks[i]
+                    eI = notcoloredChunks[i+1]
+    
+                    proc4 = mp.Process(target=distcolorizeChunk,args=(notcoloredPts_length, firstCamIndex, distcolorPoints, colorBalance, resizeFactor, statusD, colorClass, imageUsed, red, green, blue, lock4, i, x, y, z, sI, eI, cameraData, rotData, imageDataR, imageDataG, imageDataB, io_values))
+                    procs4.append(proc4)
+                
+        
+                message = "\n\n   Colorizing LAS points using color balance from 3 closest images (dist. based) ...\n"
+                if colorBalance == 1:
+                    message = "\n\n   Colorizing LAS points using color from closest image (dist. based) ...\n"
+                elif colorBalance == 2:
+                    message = "\n\n   Colorizing LAS points using color balance from 2 closest images (dist. based) ...\n"
+                    
+                print(message)
+                
+                for iproc in procs4:
+                    iproc.start()
+                
+                for iproc in procs4:
+                    iproc.join()
+                
+                notcoloredPts_length = len(currentcolorClass) - len(np.nonzero(currentcolorClass)[0])
+                 
+        notcoloredPerc = np.round((notcoloredPts_length/len(x))*100.0,2)
+        
+        if len(notcoloredPts):
+            print("\n\n   WARNING: (" + str(notcoloredPerc) + "%) " + '{:,}'.format(notcoloredPts_length) + " points were not colorized ...\n")
+    
+        if split_files > 1:
+            print("\n   Saving colorized points to a new LAS file: " + new_name + "_" + chr(k+65) + new_ext + "\n")
+        else:
+            print("\n   Saving colorized points to a new LAS file: " + new_name + new_ext + "\n")
 
-    print("\n   Saving colorized points to the LAS file ...\n")
-    #ADD color CLASS and IMAGE USED ATTRIBUTES TO ALL POINTS
-    lasFile.color_class = colorClass
-    lasFile.image_used = imageUsed
-    lasFile.red = red 
-    lasFile.green = green 
-    lasFile.blue = blue 
-    
-    lasFile.close()
-    time.sleep(0.5)
-    
-    os.rename(temp_las_file,new_las_file)
+        #ADD color CLASS and IMAGE USED ATTRIBUTES TO ALL POINTS
+        lasFile.color_class = colorClass
+        lasFile.image_used = imageUsed
+        lasFile.red = red 
+        lasFile.green = green 
+        lasFile.blue = blue 
+        
+        lasFile.close()
+        time.sleep(0.5)
+        
+        if os.path.isfile(new_las_file):
+            os.remove(new_las_file)
+            time.sleep(1)
+        
+        os.rename(temp_las_file,new_las_file)
 
     endPCP = time.time()
-    print("\n**************************** DONE COLORIZING in " + str(round((endPCP - startPCP) / 60.,2)) + " mins. " + "****************************")
+    print("\n***************************** DONE COLORIZING in " + str(round((endPCP - startPCP) / 60.,2)) + " mins. " + "*****************************")
     iHeartLidar2()
 
 
@@ -1334,7 +1382,7 @@ def OpenMMS1():
     time.sleep(0.1)
     print("     \\|________|\\|___|    \\|_______|\\|___|\\|__|\\|___|    \\|__|\\|___|    \\|__|\\|________|\n\n")
 
-
+### command line start
 if __name__ == "__main__":
     
     print("\nColorizing Point Cloud Started...")
@@ -1344,79 +1392,100 @@ if __name__ == "__main__":
     las_file = Path(sys.argv[2])
     colorBalance = int(sys.argv[3])
     doDistanceSearchAfter = sys.argv[4]
-
-    os.chdir(currentDir)
-    las_path = las_file.parents[0]
+    io_values = []
     
-    doDistance = False
-    if doDistanceSearchAfter.upper() == "TRUE":
-        doDistance = True
+    if os.path.isfile(currentDir / "camera_io.csv"):
+        camera_io = open(currentDir / "camera_io.csv", "r")
+        for lines in camera_io:
+            io_values = lines.strip("\n").split(",")
+            break
 
-    if colorBalance <= 0:
-        colorBalance = 1
-    elif colorBalance > 3:
-        colorBalance = 3
+        if len(io_values) == 11:
 
-    currentDir_parts = list(currentDir.parts)[1:]
-
-    try:
-        resizeFactorStr = currentDir_parts[-1]
-        resizeFactorParts = resizeFactorStr.split("_")
-        resizeFactor = float(resizeFactorParts[-1])
-    except:
-        resizeFactor = -1.0
-    
-    if resizeFactor != -1.0:
-        resizeFactor = np.round(resizeFactor,3)
-        if os.path.isfile(las_file):
-            las_extension = las_file.suffix
-            new_las_file = las_path / (las_file.stem + "_RGB" + str(colorBalance) + "_" + str(resizeFactor) + las_extension)
-
-            if os.path.isfile(new_las_file):
-                os.remove(new_las_file)
-                time.sleep(0.5)
-            temp_las_file = las_path / (las_file.stem + "_temp" + las_extension)
-            if os.path.isfile(temp_las_file):
-                os.remove(temp_las_file)
-                time.sleep(0.5)
-
-            if os.path.isfile(currentDir / "images_colorize.csv"):
-                imagesData = []
-                count = 0
-                with open(currentDir / "images_colorize.csv", "r") as f:
-                    previousTime = None
-                    for line in nonblank_lines(f):
-                        if line.startswith('#') == False:
-                            terms = line.strip("\n").split(",")
-                            record = []
-                            for i in range(0,len(terms)):
-                                if i == 0:
-                                    currentTime = float(terms[0])
-                                    if previousTime:
-                                        timeDiff = currentTime - previousTime
-                                        if timeDiff < -86390:
-                                            currentTime += 86400.0
-                                        elif timeDiff < -3590.0:
-                                            currentTime += 3600.0
-                                        terms[0] = str(currentTime)
-                                    terms[1] = str(currentDir / terms[1])
-                                    previousTime = currentTime
-                                record.append(terms[i])
-                            imagesData.append(record)
-                            
-                main(currentDir, las_file, temp_las_file, new_las_file, imagesData, resizeFactor, colorBalance, doDistance)
-                                
+            io_values = np.array(io_values,dtype=np.float64)
+            # for i in range(0,len(io_values)):
+            #     io_values[i] = float(io_values[i])
+            
+            os.chdir(currentDir)
+            las_path = las_file.parents[0]
+            
+            doDistance = False
+            if doDistanceSearchAfter.upper() == "TRUE":
+                doDistance = True
+        
+            if colorBalance <= 0:
+                colorBalance = 1
+            elif colorBalance > 3:
+                colorBalance = 3
+        
+            currentDir_parts = list(currentDir.parts)[1:]
+        
+            try:
+                resizeFactorStr = currentDir_parts[-1]
+                resizeFactorParts = resizeFactorStr.split("_")
+                resizeFactor = float(resizeFactorParts[-1])
+            except:
+                resizeFactor = -1.0
+            
+            if resizeFactor != -1.0:
+                resizeFactor = np.round(resizeFactor,3)
+                if os.path.isfile(las_file):
+                    las_extension = las_file.suffix
+                    new_las_file = las_path / (las_file.stem + "_RGB" + str(colorBalance) + "_" + str(resizeFactor) + las_extension)
+        
+                    if os.path.isfile(new_las_file):
+                        os.remove(new_las_file)
+                        time.sleep(0.5)
+                    temp_las_file = las_path / (las_file.stem + "_temp" + las_extension)
+                    if os.path.isfile(temp_las_file):
+                        os.remove(temp_las_file)
+                        time.sleep(0.5)
+        
+                    if os.path.isfile(currentDir / "images_colorize.csv"):
+                        imagesData = []
+                        count = 0
+                        with open(currentDir / "images_colorize.csv", "r") as f:
+                            previousTime = None
+                            for line in nonblank_lines(f):
+                                if line.startswith('#') == False:
+                                    terms = line.strip("\n").split(",")
+                                    record = []
+                                    for i in range(0,len(terms)):
+                                        if i == 0:
+                                            currentTime = float(terms[0])
+                                            if previousTime:
+                                                timeDiff = currentTime - previousTime
+                                                if timeDiff < -86390:
+                                                    currentTime += 86400.0
+                                                elif timeDiff < -3590.0:
+                                                    currentTime += 3600.0
+                                                terms[0] = str(currentTime)
+                                            terms[1] = str(currentDir / terms[1])
+                                            previousTime = currentTime
+                                        record.append(terms[i])
+                                    imagesData.append(record)
+                                    
+                        main(currentDir, las_file, temp_las_file, new_las_file, imagesData, resizeFactor, colorBalance, doDistance, io_values)
+                                        
+                    else:
+                        print("\n\n*******************************************************************************************")
+                        print("*** It appears that Image Pre-processing has not been performed, you must do this first! ***")
+                        print("*******************************************************************************************\n\n")
+                else:
+                    print("\n\n*******************************************************************************************")
+                    print("**** Specified LAS Path and Filename appears incorrect, check the trigger file inputs *****")
+                    print("*******************************************************************************************\n\n")
             else:
-                print("\n\n*******************************************************************************************")
-                print("*** It appears that Image Preprocessing has not been performed, you must do this first! ***")
-                print("*******************************************************************************************\n\n")
+                print("\n\n***********************************************************************************************************")
+                print("****** The resize factor could not be determined from the current directory name, did you rename it? ******")
+                print("***********************************************************************************************************\n\n")
         else:
             print("\n\n*******************************************************************************************")
-            print("****** Specified LAS Path and Filename appears incorrect, check the .bat file inputs ******")
+            print("* The camera_io.csv file does not contain the expected data? Pre-process the images again *")
             print("*******************************************************************************************\n\n")
     else:
-        print("\n\n***********************************************************************************************************")
-        print("****** The resize factor could not be determined from the current directory name, did you rename it? ******")
-        print("***********************************************************************************************************\n\n")
-        
+        print("\n\n*******************************************************************************************")
+        print("*** It appears that Image Pre-processing has not been performed, you must do this first! ***")
+        print("*******************************************************************************************\n\n")
+            
 

@@ -209,6 +209,7 @@ def main():
     print("\n    Writing trajectory file, please wait...\n")
 
     traj_eo = open(filePath / (trajName[:-5] + "_traj.txt"),"w")
+    traj_eo.write("\n")
 
     pbar = tqdm(total=len(posData),unit=" records",desc="    ")
     
@@ -334,7 +335,7 @@ def main():
     plt.savefig(filePath / "Traj Flight Path.png")
     plt.show()
 
-
+##### command line start
 if __name__ == "__main__":
     print("\nReal-Time Trajectory Conversion Started...\n")
     main()

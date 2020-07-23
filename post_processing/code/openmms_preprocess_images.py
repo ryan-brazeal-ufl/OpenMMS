@@ -76,7 +76,7 @@ def gpsFromUTC(year, month, day, hour, min, sec, leapSecs=18):
     return (gpsWeek, gpsSOW, gpsDay, gpsSOD) 
 
 
-def imagesChunk(currentDir, statusD, lock, chunkID, images, rfFloat, doUndist, camera_matrix, camera_dist_coeffs):
+def imagesChunk(currentDir, statusD, lock, chunkID, images, rfFloat, doUndist, undist_type, camera_matrix, camera_dist_coeffs):
     
     descStr = "    Core " + str(chunkID+1)
     if chunkID+1 > 9:
@@ -102,11 +102,11 @@ def imagesChunk(currentDir, statusD, lock, chunkID, images, rfFloat, doUndist, c
             newcameramatrix, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, camera_dist_coeffs, (w,h), 0)
             mapx, mapy = cv2.initUndistortRectifyMap(camera_matrix, camera_dist_coeffs, None, newcameramatrix, (w, h), 5)                
             pic = cv2.remap(pic, mapx, mapy, cv2.INTER_LINEAR)
-            suffix += "_u"
+            suffix += "_u" + undist_type
         
         if rfFloat != 1.0:
             pic = cv2.resize(pic, (width, height), interpolation = cv2.INTER_AREA)
-            suffix += "_r"
+            suffix += "_r" + str(rfFloat)
         
         cv2.imwrite(str(currentDir / ("resized_" + str(rfFloat)) / (imageName[:-4] + suffix + ".JPG")), pic)
             
@@ -181,23 +181,41 @@ def main(currentDir):
     eventFileName = ""
     eventData = []
     kappaData = np.zeros((36,1))
+    cam_file = ""
+    header_line = ""
+    num_cam_files = 0
     
     for indfile in os.listdir(currentDir):
         fileInfo = Path(indfile)
         filename = fileInfo.name
-        extension = fileInfo.suffix
+        extension = (fileInfo.suffix).upper()
+        
         if extension == ".JPG":
             filesList.append([filename])
-        if extension == ".txt":
+            
+        elif extension == ".TXT":
             prefix = filename[:10]
             if prefix == "event1_eo_":
+                line_count = 0
                 foundEventFile = True
                 eventFileName = filename
                 eventFile = open(currentDir / filename,'r')
                 for record in eventFile:
-                    if len(record) > 1:
-                        eventData.append(record)
+                    line_count += 1
+                    #read header line
+                    if line_count > 1:
+                        if len(record) > 1:
+                            eventData.append(record)
+                    else:
+                        header_line = record
                 eventFile.close()
+            
+        elif extension == ".CAM":
+            cam_file = currentDir / filename
+            num_cam_files += 1
+    
+    filesList.sort(key=lambda x: x[0])
+    
     eventImageCount = len(eventData)
     
     numCores = mp.cpu_count() - 1
@@ -237,6 +255,8 @@ def main(currentDir):
         count = 0
         numImages = len(filesList)
         lastEXIFtime = 0.0
+        lastFoundTimeStamp = 0.0
+        timeIncrement = 0.0
 
         images_times_DZ = []
         
@@ -248,7 +268,7 @@ def main(currentDir):
         first_img_height = 0
         sizeStr = ""
         
-        #ILCE-6000_16mm camera internal parameters (from Pix4D database in Pix4D/OpenCV camera model system), plus observed PPx offset
+        #ILCE-6000_16mm camera internal parameters (from Pix4D database in Pix4D/OpenCV camera model system)
         cameraPixelSize = 0.00391667                                    #millimetres
         cameraWidth = 6000.0                                            #pixels
         cameraHeight = 4000.0                                           #pixels
@@ -276,11 +296,17 @@ def main(currentDir):
         for filenameList in filesList:
             filename = filenameList[0]
             imgdata = PIL.Image.open(currentDir / filename)
-            exif = {
-                PIL.ExifTags.TAGS[k]: v
-                for k, v in imgdata._getexif().items()
-                if k in PIL.ExifTags.TAGS
-            }
+            
+            foundEXIF = True
+            try:
+                exif = {
+                    PIL.ExifTags.TAGS[k]: v
+                    for k, v in imgdata._getexif().items()
+                    if k in PIL.ExifTags.TAGS
+                }
+            except:
+                foundEXIF = False
+                
             img_width, img_height = imgdata.size
             imgdata.close()
             
@@ -295,18 +321,26 @@ def main(currentDir):
                     sizeStr = "\n*** ERROR: VARYING IMAGE SIZES (PLEASE EXAMINE THE IMAGES BEFORE TRYING AGAIN) ***\n"
                     return
             
-            digitalZoomR = exif.get('DigitalZoomRatio', 'NONE')
-            digitalZoom1 = str(digitalZoomR).replace("("," ")
-            digitalZoom2 = digitalZoom1.replace(")"," ")
-            digitalZoomNum = digitalZoom2.split(",")[0]
-            digitalZoomDen = digitalZoom2.split(",")[1]
-            digitalZoom = float(digitalZoomNum) / float(digitalZoomDen)
-            timeHMS = exif.get('DateTimeOriginal', 'NONE')
-            
-            timeHMS1 = timeHMS.replace(" ", ":")
-            timeHMS2 = timeHMS1.split(":")
-            gpsw,gpsSOW,gpsday,gpsSOD = gpsFromUTC(int(timeHMS2[0]),int(timeHMS2[1]),int(timeHMS2[2]),int(timeHMS2[3]),int(timeHMS2[4]),int(timeHMS2[5]),1)
-            time_stamp = gpsw * 604800.0 + gpsSOW
+            time_stamp = 0.0
+            digitalZoom = 1.0
+            if foundEXIF:
+                digitalZoomR = exif.get('DigitalZoomRatio', 'NONE')
+                digitalZoom1 = str(digitalZoomR).replace("("," ")
+                digitalZoom2 = digitalZoom1.replace(")"," ")
+                digitalZoomNum = digitalZoom2.split(",")[0]
+                digitalZoomDen = digitalZoom2.split(",")[1]
+                digitalZoom = float(digitalZoomNum) / float(digitalZoomDen)
+                timeHMS = exif.get('DateTimeOriginal', 'NONE')
+                
+                timeHMS1 = timeHMS.replace(" ", ":")
+                timeHMS2 = timeHMS1.split(":")
+                gpsw,gpsSOW,gpsday,gpsSOD = gpsFromUTC(int(timeHMS2[0]),int(timeHMS2[1]),int(timeHMS2[2]),int(timeHMS2[3]),int(timeHMS2[4]),int(timeHMS2[5]),1)
+                time_stamp = gpsw * 604800.0 + gpsSOW
+                lastFoundTimeStamp = time_stamp
+                timeIncrement = 0.0
+            else:
+                timeIncrement += 1.0
+                time_stamp = lastFoundTimeStamp + timeIncrement
         
             filesList[counter].append(time_stamp)
             counter += 1
@@ -367,7 +401,7 @@ def main(currentDir):
         if badCount > 0:
             print(dups_str)
             print("  Eliminating the duplicate images would leave " + str(numImages - badCount) + " images remaining")
-            moveBad = input("\n  DO YOU WANT TO MOVE THESE IMAGES TO A \'DUPLICATES\' DIRECTORY? (Y/N) : ")
+            moveBad = input("\n  DO YOU WANT TO MOVE THESE IMAGES TO A \'DUPLICATES\' DIRECTORY? (y/N) : ")
             if str(moveBad) == "y" or str(moveBad) == "Y":
                 if os.path.isdir(currentDir / "DUPLICATES") == False:
                     os.mkdir(currentDir / "DUPLICATES")
@@ -398,21 +432,85 @@ def main(currentDir):
         
         didResize = False
         
-        resize = input("\nDO YOU WANT TO COPY AND RESIZE, AND/OR UNDISTORT, THE IMAGES TO A NEW DIRECTORY? (Y/N) : ")
+        resize = input("\nDO YOU WANT TO COPY AND RESIZE, AND/OR UNDISTORT, THE IMAGES TO A NEW DIRECTORY? (y/N) : ")
         suffix = ""
         if str(resize) == "y" or str(resize) == "Y":
             resizeFactor = input("\n    WHAT IS THE RESIZE FACTOR (RF)? [0.1 <= RF <= 1.0] : ")
             if float(resizeFactor) >= 0.1 and float(resizeFactor) <= 1.0:
-                doUndist = False
-                suffix = "_r"
-                undist = input("\n    DO YOU WANT TO UNDISTORT THE IMAGES USING THE SONY A6000-16mm LENS MODEL? (Y/N) : ")
-                if str(undist) == "y" or str(undist) == "Y":
-                    doUndist = True
-                    suffix = "_u" + suffix
-                print()
-                
                 rfStr = str(np.round(float(resizeFactor),3))
                 rfFloat = float(rfStr)
+                doUndist = False
+                undist_type = ""
+                suffix = "_r" + str(rfFloat)
+                good_cam = False
+                new_cameraFocal = 0
+                new_cameraPPx = 0
+                new_cameraPPy = 0
+                new_cameraK1 = 0
+                new_cameraK2 = 0
+                new_cameraK3 = 0
+                new_cameraP1 = 0
+                new_cameraP2 = 0
+                if num_cam_files == 1:
+                    cam_data = open(cam_file,'r')
+                    record_count = 0
+                    for record in cam_data:
+                        record_count += 1
+                        
+                        if record_count == 1:
+                            if "PIX4D CAMERA CALIBRATION FILE" in record.upper():
+                                good_cam = True
+                            else:
+                                break
+                        else:
+                            line_elements = record.strip('\n').split(' ')
+                            if len(line_elements) == 2:
+                                if line_elements[0].upper() == "F":
+                                    new_cameraFocal = float(line_elements[1]) / cameraPixelSize
+                                elif line_elements[0].upper() == "PX":
+                                    new_cameraPPx = float(line_elements[1]) / cameraPixelSize
+                                elif line_elements[0].upper() == "PY":
+                                    new_cameraPPy = float(line_elements[1]) / cameraPixelSize
+                                elif line_elements[0].upper() == "K1":
+                                    new_cameraK1 = float(line_elements[1])
+                                elif line_elements[0].upper() == "K2":
+                                    new_cameraK2 = float(line_elements[1])
+                                elif line_elements[0].upper() == "K3":
+                                    new_cameraK3 = float(line_elements[1])
+                                elif line_elements[0].upper() == "T1":
+                                    new_cameraP1 = float(line_elements[1])
+                                elif line_elements[0].upper() == "T2":
+                                    new_cameraP2 = float(line_elements[1])
+                                        
+                    cam_data.close()
+                
+                undist = ""
+                if good_cam:
+                    print("\n    FOUND .CAM FILE: " + (cam_file.name))
+                    undist = input("    DO YOU WANT TO UNDISTORT THE IMAGES USING THE CAMERA MODEL FOUND IN THE .CAM FILE? (y/N) : ")
+                    if str(undist) == "y" or str(undist) == "Y":
+                        doUndist = True
+                        undist_type = "CAM"
+                        suffix = "_uCAM" + suffix
+                        cameraFocal = new_cameraFocal
+                        cameraPPx = new_cameraPPx
+                        cameraPPy = new_cameraPPy
+                        cameraK1 = new_cameraK1
+                        cameraK2 = new_cameraK2
+                        cameraK3 = new_cameraK3
+                        cameraP1 = new_cameraP1
+                        cameraP2 = new_cameraP2
+                    else:
+                        undist = ""
+                    
+                if undist == "":
+                    undist = input("\n    DO YOU WANT TO UNDISTORT THE IMAGES USING THE GENERIC SONY A6000-16mm LENS MODEL? (y/N) : ")
+                    if str(undist) == "y" or str(undist) == "Y":
+                        doUndist = True
+                        undist_type = "GEN"
+                        suffix = "_uGEN" + suffix
+                print()
+                
                 if os.path.isdir(currentDir / ("resized_" + rfStr)) == False:
                     os.mkdir(currentDir / ("resized_" + rfStr))
                     time.sleep(0.1)
@@ -428,7 +526,7 @@ def main(currentDir):
                     statusD[i] = 0
                     
                 for i in range(0,len(chunkIndex)-1):
-                    proc1 = mp.Process(target=imagesChunk,args=(currentDir, statusD, lock, i, filesList[chunkIndex[i]:chunkIndex[i+1]],rfFloat,doUndist,camera_matrix,camera_dist_coeffs))                    
+                    proc1 = mp.Process(target=imagesChunk,args=(currentDir, statusD, lock, i, filesList[chunkIndex[i]:chunkIndex[i+1]],rfFloat,doUndist,undist_type,camera_matrix,camera_dist_coeffs))                    
                     procs.append(proc1)
                     
                 for iproc in procs:
@@ -445,7 +543,7 @@ def main(currentDir):
         
         
         if foundEventFile:
-            createPix = input("\nDO YOU WANT TO CREATE AN IMAGES EO FILE FOR PIX4D? (Y/N) : ")
+            createPix = input("\nDO YOU WANT TO CREATE AN IMAGES EO FILE FOR PIX4D? (y/N) : ")
             if str(createPix) == "y" or str(createPix) == "Y":
                 filter1start = 1
                 filter1end = 10000
@@ -453,7 +551,7 @@ def main(currentDir):
                 filter2end = 10000
                 filter3start = 1
                 filter3end = 10000
-                filterEvents = input("\n    DO YOU WANT TO FILTER THE EO FILE BASED ON EVENT NUMBERS? (Y/N) : ")
+                filterEvents = input("\n    DO YOU WANT TO FILTER THE EO FILE BASED ON EVENT NUMBERS? (y/N) : ")
                 if str(filterEvents) == "y" or str(filterEvents) == "Y":
                     filter1start = input("\n      Enter first start Event number (integer) : ")
                     if filter1start == "":
@@ -571,7 +669,7 @@ def main(currentDir):
                     filter4high = 180
                     filter5low = -180
                     filter5high = 180
-                    filterKappa = input("\n    DO YOU WANT TO FILTER THE EO FILE BASED ON KAPPA ANGLES? (Y/N) : ")
+                    filterKappa = input("\n    DO YOU WANT TO FILTER THE EO FILE BASED ON KAPPA ANGLES? (y/N) : ")
                     
                     if str(filterKappa) == "y" or str(filterKappa) == "Y":
                         print("\n      KAPPA VALUES SUMMARY FOR IMAGES:")
@@ -635,6 +733,7 @@ def main(currentDir):
                     print("\n*** PIX4D IMAGES FILE AND COLORIZATION INFO. FILE HAVE BEEN CREATED! ***")
                     pix4dOut.close()
                     colorizeOut.close()
+                    
                 else:
                     imageNum = 0
                     pix4dOut = open(currentDir / "images_pix4d.csv", 'w')
@@ -650,6 +749,20 @@ def main(currentDir):
                     pix4dOut.close()
                     colorizeOut.close()
             
+            camera_io = open(currentDir / "camera_io.csv", 'w')
+            camera_io.write(str(cameraPixelSize) + ",")
+            camera_io.write(str(cameraWidth) + ",")
+            camera_io.write(str(cameraHeight) + ",")
+            camera_io.write(str(cameraFocal) + ",")
+            camera_io.write(str(cameraPPx) + ",")
+            camera_io.write(str(cameraPPy) + ",")
+            camera_io.write(str(cameraK1) + ",")
+            camera_io.write(str(cameraK2) + ",")
+            camera_io.write(str(cameraK3) + ",")
+            camera_io.write(str(cameraP1) + ",")
+            camera_io.write(str(cameraP2) + "\n")
+            camera_io.close()
+            
             if didResize:
                 imageNum = 0
                 colorizeOut = open(currentDir / ("resized_" + rfStr) / "images_colorize.csv", 'w') 
@@ -663,11 +776,42 @@ def main(currentDir):
                     imageNum += 1
                 print("\n*** COLORIZATION INFO. FILE FOR THE RESIZED IMAGES HAS BEEN CREATED! ***\n")
                 colorizeOut.close()
-                 
+                
+                camera_io = open(currentDir / ("resized_" + rfStr) / "camera_io.csv", 'w')
+                camera_io.write(str(cameraPixelSize) + ",")
+                camera_io.write(str(cameraWidth) + ",")
+                camera_io.write(str(cameraHeight) + ",")
+                camera_io.write(str(cameraFocal) + ",")
+                camera_io.write(str(cameraPPx) + ",")
+                camera_io.write(str(cameraPPy) + ",")
+                camera_io.write(str(cameraK1) + ",")
+                camera_io.write(str(cameraK2) + ",")
+                camera_io.write(str(cameraK3) + ",")
+                camera_io.write(str(cameraP1) + ",")
+                camera_io.write(str(cameraP2) + "\n")
+                camera_io.close()
+        
+            #all events related to associated images file
+            imageNum = 0
+            allOut = open(currentDir / "images_matched_to_events.csv", 'w') 
+            allOut.write("#LA_X,LA_Y,LA_Z,Bore_X,Bore_Y,Bore_Z\n")
+            allOut.write(header_line)
+            allOut.write("#Event,Time,Image,X,Y,Z,Omega,Phi,Kappa,Heading,HorVel,UpVel\n")
+            for filename in filesList:
+                fileInfo = Path(currentDir / filename)
+                extension = fileInfo.suffix
+                imageName = fileInfo.stem
+                eventRecord = eventData[imageNum].split(",")
+                horVel = str(np.round(np.sqrt((float(eventRecord[12]))**2 + (float(eventRecord[13]))**2),2))
+                allOut.write(str(imageNum+1) + "," + eventRecord[0] + "," + imageName + extension + "," + eventRecord[1] + "," + eventRecord[2] + "," + eventRecord[3] + "," + eventRecord[4] + "," + eventRecord[5] + "," + str(float(eventRecord[6])) + "," + str(float(eventRecord[7])) + "," + horVel + "," + str(float(eventRecord[14])) + "\n")        
+                imageNum += 1
+            allOut.close()
+        
         iHeartLidar2()
 
-
+##### command line start
 if __name__ == "__main__":
+    np.set_printoptions(suppress=True)
     print("\nPreprocessing Images Started...")
     currentDir = Path(str(sys.argv[1]))
     main(currentDir)

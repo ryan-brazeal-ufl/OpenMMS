@@ -33,12 +33,13 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 | <a href="./code/openmms_traj_convert.py">openmms_traj_convert.py</a> | <a href="./win_batch_files/2_traj_convert.bat">2_traj_convert.bat</a> | <a href="./mac_bash_files/2_traj_convert">2_traj_convert</a> |
 | <a href="./code/openmms_georeference.py">openmms_georeference.py</a> | <a href="./win_batch_files/3_quick_georef_WGS84_UTM13.bat">3_quick_georef_WGS84_UTM13.bat</a> <br> <a href="./win_batch_files/4_verbose_georef_WGS84_UTM13.bat">4_verbose_georef_WGS84_UTM13.bat</a> <br> <a href="./win_batch_files/6_full_georef_WGS84_UTM13.bat">6_full_georef_WGS84_UTM13.bat</a> | <a href="./mac_bash_files/3_quick_georef_WGS84_UTM13">3_quick_georef_WGS84_UTM13</a> <br> <a href="./mac_bash_files/4_verbose_georef_WGS84_UTM13">4_verbose_georef_WGS84_UTM13</a> <br> <a href="./mac_bash_files/6_full_georef_WGS84_UTM13">6_full_georef_WGS84_UTM13</a> |
 | <a href="./code/openmms_preprocess_images.py">openmms_preprocess_images.py</a> | <a href="./win_batch_files/7_preprocess_images.bat">7_preprocess_images.bat</a> | <a href="./mac_bash_files/7_preprocess_images">7_preprocess_images</a> |
-| <a href="./code/openmms_colorize.py">openmms_colorize.py</a> | <a href="./win_batch_files/8_colorize_las.bat">8_colorize_las.bat</a> | <a href="./mac_bash_files/8_colorize_las">8_colorize_las</a> |
+| <a href="./code/openmms_colorize.py">openmms_colorize.py</a> | <a href="./win_batch_files/9_colorize_las.bat">9_colorize_las.bat</a> | <a href="./mac_bash_files/9_colorize_las">9_colorize_las</a> |
 
 <hr>
 <h3>Sensor Calibration Applications Overview</h3>
 
-<p>The following commandline-based Python3 application is installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor. The boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed, and the lever-arm offset values are estimated and displayed. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
+<p>The following commandline-based Python3 applications are installed on a user's computer, and provides the user with a novel approach to estimating the boresight alignment angles for the OpenMMS lidar sensor and Sony A6000 mapping camera. The lidar sensor boresight calibration approach attempts to determine the optimal set of boresight alignment angles that minimize the RMS values for a set of best-fit planar surfaces that correspond to manually identified planar sections within a post-processed point cloud. The mapping camera boresight calibration approach attempts to determine the optimal set of boresight alignment angles and offsets (with respect to the lidar sensor) that minimize the differences between the GNSS-INS estimated exterior orientation parameters of the collected images, and the exterior orientation parameters estimated via the bundle adjustment results from a commercial photogrammetry/SfM software (Pix4D currently).</p>
+<p>A novel procedure for precisely estimating the lever-arm offsets between the GNSS antennas and the Applanix sensor, via a total station/theodolite intersection survey, is also included. A Microsoft Excel spreadsheet is provided, where the survey observations are simply entered into the spreadsheet and automatically all the calculations are performed, and the lever-arm offset values are estimated and displayed. The new lever-arm offset values then need to be entered into the Applanix sensor's firmware, via its WebUI. See the <a href="https://www.openmms.org">OpenMMS website</a> for complete details.</p>
 
 <p align="center"><img width="22%" src="../images/pp_apps3.jpg"></p>
 
@@ -46,11 +47,8 @@ The trigger files for both Windows and Mac OS are also shown here for reference,
 | --------------------|-----------------------|----------------------- |
 | <a href="./code/openmms_vlp16_calibration.py">openmms_vlp16_calibration.py</a> | <a href="./win_batch_files/5_vlp16_calibration.bat">5_vlp16_calibration.bat</a> | <a href="./mac_bash_files/5_vlp16_calibration">5_vlp16_calibration</a> |
 | <a href="./code/openmms_vlp16_calibration_CUDA.py">openmms_vlp16_calibration_CUDA.py</a> | <a href="./win_batch_files/5_vlp16_calibration_CUDA.bat">5_vlp16_calibration_CUDA.bat</a> | N/A |
+| <a href="./code/openmms_camera_calibration.py">openmms_camera_calibration.py</a> | <a href="./win_batch_files/8_camera_calibration.bat">8_camera_calibration.bat</a> | <a href="./mac_bash_files/8_camera_calibration">8_camera_calibration</a> |
 | <a href="https://github.com/ryan-brazeal-ufl/OpenMMS/raw/master/post_processing/code/openmms_lever_cal.xlsx">openmms_lever_cal.xlsx</a> | N/A | N/A |
-
-<br>
-<p><b>A detailed boresight calibration procedure for the Sony A6000 camera is COMING SOON... </b>
-</p>
 
 <hr>
 <h3>Installation</h3>

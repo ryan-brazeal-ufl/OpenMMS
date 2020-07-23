@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="T_LLhN_RPHd_XYZa_Zar_ENUv" ProfileVersion="2.0.1" SoftwareVersion="8.4">
+  <xs:element name="OpenMMS_Export" ProfileVersion="2.0.1" SoftwareVersion="8.4">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="data" type="data">
@@ -41,6 +41,51 @@
         <xs:element name="header" type="header">
           <xs:complexType>
             <xs:sequence>
+              <xs:element name="Grid Name" type="pointer" subtype="pointer" select="String" format="%s" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Zone Name" type="pointer" subtype="pointer" select="String" format="%s" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Datum Name" type="pointer" subtype="pointer" select="String" format="%s" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Ellipsoid Name" type="pointer" subtype="pointer" select="String" format="%s" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Target Epoch" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Reference to IMU Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Reference to IMU Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Reference to IMU Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Reference to IMU Mounting Angles" type="double" subtype="angle" select="Degrees" format="%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Reference to IMU Mounting Angles" type="double" subtype="angle" select="Degrees" format="%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Reference to IMU Mounting Angles" type="double" subtype="angle" select="Degrees" format="%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Reference to Primary GNSS Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Reference to Primary GNSS Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Reference to Primary GNSS Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Vehicle to Reference Mounting Angles" type="double" subtype="angle" select="Degrees" format="%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Vehicle to Reference Mounting Angles" type="double" subtype="angle" select="Degrees" format="%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Vehicle to Reference Mounting Angles" type="double" subtype="angle" select="Degrees" format="%.6lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="X Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Tx" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Ty" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Tz" type="double" subtype="number" select="Text" format="" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

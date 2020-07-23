@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="TENHOPKHdXaYaZaZar" ProfileVersion="2.0" SoftwareVersion="8.1">
+  <xs:element name="OpenMMS_Camera" ProfileVersion="2.0.1" SoftwareVersion="8.4">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="data" type="data">
@@ -29,12 +29,29 @@
               <xs:element name="Z Body Acceleration" type="double" subtype="number" select="Text" format="%.3lf" />
               <xs:text xml:space="preserve">,</xs:text>
               <xs:element name="Z Body Angular Rate" type="double" subtype="number" select="Text" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="East velocity" type="double" subtype="velocity" select="Meters per second" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="North velocity" type="double" subtype="velocity" select="Meters per second" format="%.3lf" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Up velocity" type="double" subtype="velocity" select="Meters per second" format="%.3lf" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="header" type="header">
           <xs:complexType>
             <xs:sequence>
+              <xs:element name="X Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Y Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Z Lever Arm" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Tx" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Ty" type="double" subtype="number" select="Text" format="" />
+              <xs:text xml:space="preserve">,</xs:text>
+              <xs:element name="Tz" type="double" subtype="number" select="Text" format="" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

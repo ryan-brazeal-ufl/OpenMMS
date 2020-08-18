@@ -1793,7 +1793,7 @@ if __name__ == "__main__":
                                         proc1=subprocess.Popen(args1,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
                                         output,error=proc1.communicate()
                                         
-                                #Mac OS X - creating CC .bin file works on Mac, but automatically opening it afterwards currently does not (Work In Progress) 
+                                #Mac OS X
                                 else:
                                     if os.path.isfile(r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare"):
                                         print("\n            Creating a CloudCompare .BIN point cloud, please wait ...")
@@ -1826,15 +1826,13 @@ if __name__ == "__main__":
                                         args2=[r"C:\Program Files\CloudCompare\CloudCompare.exe", str(filePath / (outfileName + ".bin"))]
                                         proc2=subprocess.Popen(args2,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
                                         
-                                    #Automatically opening a CC .bin on Mac OS X currently does not work (Work In Progress)
+                                    #Mac OS X
                                     else:
                                         print("\n  The point cloud is now opening in CloudCompare!")
                                         sys.stdout = sys.__stdout__
                                         print("\n  The point cloud is now opening in CloudCompare!")
                                         sys.stdout = logFile
-                                        # subprocess.call(r"open " + str(filePath / (outfileName + ".bin")), shell=True)
-                                        args2=[r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare", str(filePath / (outfileName + ".bin"))]
-                                        proc2=subprocess.Popen(args2,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
+                                        subprocess.Popen(r"/Applications/CloudCompare.app/Contents/MacOS/CloudCompare " + str(filePath / (outfileName + ".bin")), shell=True)
                                     
                             else:
                                 print("\n***************************** DONE PROCESSING in " + str(round((endPCP - startPCP) / 60.,2)) + " mins. " + "*****************************")

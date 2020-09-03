@@ -1,4 +1,4 @@
-<img src="./images/github_mosaic_sm.jpg">
+<img src="./images/github_mosaic2_sm.jpg">
 <hr>
 <p>
 <img src="./images/pc_logo7.jpg">

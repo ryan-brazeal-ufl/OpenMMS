@@ -288,8 +288,11 @@ def main():
     tX = dgData[:,2][:-1]
     tY = dgData[:,1][:-1]
     eventData = np.asarray(eventData,dtype=np.float32)
-    eX = eventData[:,0]
-    eY = eventData[:,1]
+    numEvents = len(eventData)
+    
+    if numEvents:
+        eX = eventData[:,0]
+        eY = eventData[:,1]
     
     if len(tX) != goodData:
         new_tX = []
@@ -318,10 +321,11 @@ def main():
     event_x = [0.0]
     event_y = [0.0]
     
-    for i in range(1,len(eX)):
-        n,e = LL2NE(tY[0],tX[0],eY[i],eX[i])
-        event_y.append(n)
-        event_x.append(e)
+    if numEvents:
+        for i in range(1,len(eX)):
+            n,e = LL2NE(tY[0],tX[0],eY[i],eX[i])
+            event_y.append(n)
+            event_x.append(e)
     
     event_x -= min_x
     event_y -= min_y

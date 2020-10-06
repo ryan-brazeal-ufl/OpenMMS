@@ -905,7 +905,7 @@ def main(currentDir, las_file, temp_las_file, new_las_file, colorizeData, resize
     
     num_records = len(lasFileOrg.points)
     total_size = record_length * num_records
-    split_files = 0
+    split_files = 1
     split_at = [0]
     
     if total_size >= 2**31:

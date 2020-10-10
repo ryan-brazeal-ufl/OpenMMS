@@ -2,7 +2,7 @@
 <h4>These applications are installed on the Raspberry Pi computer and the Adafruit Trinket Pro micro-controller inside the OpenMMS Hardware, and provide the user with operational control of the sensor.</h4>
 
 
-| <a href="./openmms_controller_vlp16.py">openmms_controller_vlp16.py</a> <br> <a href="./openmms_intervalometer.ino">openmms_intervalometer.ino</a> | <img width="80%" src="../images/real_time_apps.jpg"> |
+| <a href="./openmms_controller_vlp16.py">openmms_controller_vlp16.py</a><br><a href="./openmms_controller_livox.py">openmms_controller_livox.py</a><br><a href="./openmms_intervalometer.ino">openmms_intervalometer.ino</a> | <img width="80%" src="../images/real_time_apps.jpg"> |
 |-------------|-------------|
 
 <p>The OpenMMS Hardware also provides the user with access to a web-based user interface (webUI) for downloading the digital mapping datasets stored within the Raspberry Pi computer's filesystem, and for accessing the sensor's dynamic settings (i.e., settings that may want to be changed from one project to the next). In order to simplify the tasks of installing a Raspberry Pi compatible Operating System (OS) and all the necessary applications on a microSD card, a complete OpenMMS OS image file has been created.<br></p>

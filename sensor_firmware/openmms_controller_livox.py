@@ -31,13 +31,12 @@ import RPi.GPIO as GPIO
 import time
 import os
 import subprocess
-import re
 import os.path
 from picamera import PiCamera
 import serial
 import openpylivox as opl
 
-#change working directory to scans
+#change working directory to mms_data
 os.chdir("/home/openmms/mms_data")
 
 cameraInstalled = "1"
@@ -88,8 +87,8 @@ timeFileName = ""
 try:
     videoCamera = PiCamera()
     videoCamera.rotation = 180
-    videoCamera.resolution = (800,600)
-    videoCamera.framerate = 20
+    videoCamera.resolution = (1920,1080)
+    videoCamera.framerate = 30
     video_quality = 20
 except:
     cameraInstalled = "0"
@@ -108,7 +107,6 @@ def checkVideo():
 
 def getUTCtime():
 
-    time.sleep(0.5)
     entryTime = time.time()
     utcHour = 0
     utcMin = 0.0
@@ -119,7 +117,7 @@ def getUTCtime():
 
     #try to get time from the serial stream from the APX sensor
     try:
-        ser = serial.Serial('/dev/serial0',115200,timeout=0.05)
+        ser = serial.Serial('/dev/serial0',115200)
         for t in range(0,50):
             line = ser.readline().decode('ascii')
             UTCdata = line.strip('\n').split(',')
@@ -634,36 +632,36 @@ while True:
                         sensor.dataStart_RT_B()
                         time.sleep(0.1)
 
+                        curTime = []
                         while True:
                             pps_pulse = GPIO.input(pps)
                             if pps_pulse:
-                                time.sleep(0.01)
                                 # print("PPS pulse detected")
                                 cur_time = getUTCtime()
 
                                 if cur_time[0] >= 0:
-                                    tcpdumpSTART = subprocess.run(str(newCommand), shell=True)
-                                    startDump = time.time()
-                                    us = int(round(cur_time[4] * 60000000.0 + cur_time[5] * 1000000.0,0))
-                                    sensor.updateUTC(cur_time[0],cur_time[1],cur_time[2],cur_time[3],us)
-                                    timeFileName = "OpenMMS_" + filename + ".livox"
-                                    
-                                    with open(timeFileName, 'w') as timeFile:
-                                        timeFile.write(firmware + "\n")
-                                        timeFile.write(str(cur_time[0]) + "\n")
-                                        timeFile.write(str(cur_time[1]) + "\n")
-                                        timeFile.write(str(cur_time[2]) + "\n")
-                                        timeFile.write(str(cur_time[3]) + "\n")
-                                        timeFile.write(str(cur_time[4]) + "\n")
-                                        timeFile.write(str(cur_time[5]) + "\n")
-                                        timeFile.write(str(cur_time[6]) + "\n")
-                                        timeFile.write(str(cur_time[7]) + "\n")
-                                        timeFile.write(str(startDump) + "\n")
-                        
                                     break
                                 
-                        ttylogSTART = subprocess.run(str(newCommand2), shell=True)
-                        time.sleep(0.1)
+                        ttylogSTART = subprocess.run(str(newCommand2), shell=True)                        
+                        tcpdumpSTART = subprocess.run(str(newCommand), shell=True)
+                        startDump = time.time()
+                        us = int(round(cur_time[4] * 60000000.0 + cur_time[5] * 1000000.0,0))
+                        sensor.updateUTC(cur_time[0],cur_time[1],cur_time[2],cur_time[3],us)
+                        timeFileName = "OpenMMS_" + filename + ".livox"
+                        
+                        with open(timeFileName, 'w') as timeFile:
+                            timeFile.write(firmware + "\n")
+                            timeFile.write(str(cur_time[0]) + "\n")
+                            timeFile.write(str(cur_time[1]) + "\n")
+                            timeFile.write(str(cur_time[2]) + "\n")
+                            timeFile.write(str(cur_time[3]) + "\n")
+                            timeFile.write(str(cur_time[4]) + "\n")
+                            timeFile.write(str(cur_time[5]) + "\n")
+                            timeFile.write(str(cur_time[6]) + "\n")
+                            timeFile.write(str(cur_time[7]) + "\n")
+                            timeFile.write(str(startDump) + "\n")
+                        
+                        
                         GPIO.output(blueLED, ledON)
 
                         checkVideo()

@@ -129,14 +129,14 @@ In order to produce the highest quality dataset for the positions and orientatio
   <b>2.</b> With POSPac UAV closed, copy the <b>OpenMMS_Camera.xsd</b> and <b>OpenMMS_Export.xsd</b> files from the <i>C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Format Profiles\</i> directory, to the <i>C:\ProgramData\Applanix\User Format Profiles\</i> directory. The <i>ProgramData</i> directory is hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled. 
 </p>
 <p>
-  <b>3.</b> Next, copy the example <b>OpenMMS WGS84 UTM EGM96.postml</b> project template file from the <i>C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\</i> directory, to the <i>C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\</i> directory. Where <i>{USERNAME}</i> would be replaced with the actual username logged into the computer. The <i>AppData</i> directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
+  <b>3.</b> Next, copy the example <b>Livox OpenMMS WGS84 UTM EGM96.postml</b> and <b>VLP16 OpenMMS WGS84 UTM EGM96.postml</b> project template files from the <i>C:\OpenMMS\install\Windows OS\POSPac UAV - OpenMMS Specific Install Instructions\v8.4\Project Templates\</i> directory, to the <i>C:\Users\{USERNAME}\AppData\Roaming\Applanix\POSPac UAV\8.4\</i> directory. Where <i>{USERNAME}</i> would be replaced with the actual username logged into the computer. The <i>AppData</i> directory is also hidden by default, so in order to access it the user will need to ensure viewing of hidden files and folders is enabled.
 </p>
 <p>
   <b>4.</b> Open POSPac UAV, click the <i>File</i> Menu, then click on <i>Options</i>. Within the <i>Import and Process</i> section, select the options that match those shown in the following image. Click the <i>OK</i> button to finish. 
 </p>
 <p align="center"><img width="70%" src="../images/pospac_options.jpg"></p>
 <p>
-  <b>5.</b> Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The example <b>OpenMMS WGS84 UTM EGM96</b> should appear in the list of available project templates. Select the example template, then click the <i>OK</i> button.
+  <b>5.</b> Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The <b>Livox OpenMMS WGS84 UTM EGM96</b> and <b>VLP16 OpenMMS WGS84 UTM EGM96</b> templates should appear in the list of available project templates. Select the either one of the templates, then click the <i>OK</i> button.
 </p>
 <p align="center"><img width="35%" src="../images/pospac_project.jpg"></p>
 <p>

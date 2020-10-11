@@ -115,7 +115,7 @@ However, the NVidia CUDA Toolkit requires that an appropriate version of the Mic
 <hr>
 <h3>Thanks to rapidlasso!</h3>
 <p>
-In addition to all the foundational Python packages, many thanks go to the <a href="https://rapidlasso.com/">rapidlasso</a> team for the creation of <a href="https://rapidlasso.com/lastools/">LAStools</a>. The OpenMMS Georeferencing application utilizes the <a href="https://rapidlasso.com/lastools/las2las/">las2las</a> binaries (for Windows and for Mac/Linux) for efficiently merging multiple .LAS files together, and for assigning the point cloud's coordinate system within the file's header.
+In addition to all the foundational Python packages, many thanks go to the <a href="https://rapidlasso.com/">rapidlasso</a> team for the creation of <a href="https://rapidlasso.com/lastools/">LAStools</a>. The OpenMMS Georeferencing application utilizes the <a href="https://rapidlasso.com/lastools/las2las/">las2las</a> binaries (for Windows and for Mac/Linux) for efficiently merging multiple .LAS files together, assigning the point cloud's coordinate system within the file's header, and compressing the point clouds into the amazing .laz file format.
 </p>
 <hr>
 <h3>Getting Started with Applanix POSPac UAV GNSS-Inertial Post-Processing Software (Windows Only!)</h3>
@@ -138,7 +138,7 @@ In order to produce the highest quality dataset for the positions and orientatio
 <p>
   <b>5.</b> Click the <i>Project</i> Tab in the top menu of POSPac UAV. Click on <i>New Project</i>. The <b>Livox OpenMMS WGS84 UTM EGM96</b> and <b>VLP16 OpenMMS WGS84 UTM EGM96</b> templates should appear in the list of available project templates. Select the either one of the templates, then click the <i>OK</i> button.
 </p>
-<p align="center"><img width="35%" src="../images/pospac_project.jpg"></p>
+<p align="center"><img width="35%" src="../images/pospac_project2.jpg"></p>
 <p>
   <b>6.</b> On the <i>Project</i> Tab, click on <i>Project Settings</i>. In the left column of the Project Settings dialog, click on <i>Export</i>, and then click on <i>Settings</i>. Make sure that <i>Output Format</i> dropbox shows <b>OpenMMS_Export</b>. Next, in the left column click on <i>Camera</i>, and then click on <i>Exterior Orientation</i>. Make sure that <i>Output Format</i> dropbox shows <b>OpenMMS_Camera</b>.
 </p>

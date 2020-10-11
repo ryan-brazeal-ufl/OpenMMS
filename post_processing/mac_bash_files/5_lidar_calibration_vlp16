@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+do_vlp16_internal_cal=False
+do_extra_bore_cal=False
+export_final_ECEF_planes=False
+
+python /OpenMMS/code/openmms_lidar_calibration_vlp16.py $DIR $do_vlp16_internal_cal $do_extra_bore_cal $export_final_ECEF_planes
+
+echo ""
+read -p "Press Enter to continue ..."

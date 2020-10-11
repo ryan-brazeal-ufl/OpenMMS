@@ -2,10 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-max_images=500
-orientation_only=True
-
-python /OpenMMS/code/openmms_camera_calibration.py $DIR $max_images $orientation_only
+python /OpenMMS/code/openmms_lidar_calibration_livox.py $DIR
 
 echo ""
 read -p "Press Enter to continue ..."

@@ -1,0 +1,78 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+boresight_file=zeros.txt
+output_file=verbose_pc.laz
+start_proc_time=-1
+end_proc_time=-1
+quick_processing=False
+verbose_output=True
+display_plots=False
+time_sync_corr=0
+geo_cs=4326
+proj_cs=32613
+
+counter1=0
+counter2=0
+counter3=0
+pcap=none
+nav=none
+livox=none
+
+for f in "$DIR"/*; do
+  fn="$(basename -- $f)"
+  ext="${fn##*.}"
+  extUP=`echo "$ext" | tr '[:lower:]' '[:upper:]'`
+
+  if [[ "$extUP" == "PCAP" ]]; then
+    pcap=$f
+    counter1=$((counter1+1))
+  fi
+  
+  if [[ "$extUP" == "TXT" ]]; then
+    nav=$f
+    counter2=$((counter2+1))
+  fi
+  
+  if [[ "$extUP" == "LIVOX" ]]; then
+    livox=$f
+    counter3=$((counter3+1))
+  fi
+  
+done
+
+if [ $counter1 = 1 ]; then
+  if [ $counter2 = 1 ]; then
+    if [ $counter3 = 1 ]; then
+      python /OpenMMS/code/openmms_georeference_livox.py /OpenMMS/code/serf/geo/ /OpenMMS/sys_params/$boresight_file $nav $pcap $livox $output_file $quick_processing $verbose_output $start_proc_time $end_proc_time $display_plots $geo_cs $proj_cs $time_sync_corr $DIR
+    fi
+  fi
+fi
+
+if [ $counter1 = 0 ]; then
+  echo "No PCAP file was found in the current directory"
+fi  
+
+if [ $counter1 -gt 1 ]; then
+  echo "More than one PCAP file was found in the current directory, only a single PCAP file should be present"
+fi
+
+if [ $counter2 = 0 ]; then
+  echo "No NAV text (.txt) file was found in the current directory"
+fi  
+
+if [ $counter2 -gt 1 ]; then
+  echo "More than one NAV text (.txt) file was found in the current directory, only a single .txt file should be present"
+fi
+
+if [ $counter3 = 0 ]; then
+  echo "No LIVOX file was found in the current directory"
+fi  
+
+if [ $counter3 -gt 1 ]; then
+  echo "More than one LIVOX file was found in the current directory, only a single LIVOX file should be present"
+fi
+
+echo ""
+read -p "Press Enter to continue ..."

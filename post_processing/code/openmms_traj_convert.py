@@ -216,6 +216,7 @@ def main():
     dgData = np.ones((len(posData),7),dtype=np.float32) * -1.0
     goodData = 0
     lenOriData = len(oriData)
+    last_eo = ""
     
     for i in range(0,len(posData)):
         pbar.update()
@@ -236,6 +237,7 @@ def main():
                 dgData[i,5] = (oriData[j][2])
                 dgData[i,6] = (oriData[j][3])
                 
+                last_eo = list(dgData[i])
                 traj_eo.write(str(dgData[i,0])+","+str(dgData[i,1])+","+str(dgData[i,2])+","+str(dgData[i,3])+",0,"+str(dgData[i,4])+","+str(dgData[i,5])+","+str(dgData[i,6])+",0,0,0,0,0,0,0\n")
                 found = True
                 break
@@ -253,6 +255,7 @@ def main():
                     dgData[i,5] = (oriData[j][2])
                     dgData[i,6] = (oriData[j][3])
                     
+                    last_eo = list(dgData[i])
                     traj_eo.write(str(dgData[i,0])+","+str(dgData[i,1])+","+str(dgData[i,2])+","+str(dgData[i,3])+",0,"+str(dgData[i,4])+","+str(dgData[i,5])+","+str(dgData[i,6])+",0,0,0,0,0,0,0\n")
                     found = True
                     break
@@ -277,7 +280,7 @@ def main():
 #                dgRecord.append(phi)
 #                dgRecord.append(kappa)
                 
-                
+    traj_eo.write(str(np.round(last_eo[0]+1.0,1))+","+str(last_eo[1])+","+str(last_eo[2])+","+str(last_eo[3])+",0,"+str(last_eo[4])+","+str(last_eo[5])+","+str(last_eo[6])+",0,0,0,0,0,0,0\n")
 
     pbar.close()
     traj_eo.close()

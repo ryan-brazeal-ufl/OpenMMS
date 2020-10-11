@@ -30,7 +30,7 @@
 import os
 import sys
 import numpy as np
-from numpy import sin, cos, arcsin, arctan, arctan2
+from numpy import sin, cos, tan, arcsin, arctan, arctan2
 from numba import vectorize
 import numdifftools as nd
 from pathlib import Path
@@ -155,7 +155,11 @@ def computeF_dZ(LAx,LAy,LAz,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc):
 
 @vectorize(['float64(float64,float64,float64,float64,float64,float64,float64,float64,float64)'], target='parallel')
 def computeF_dO(Bx,By,Bz,Or,Pr,Kr,Oc,Pc,Kc):
-    diff = -arctan2(-(((sin(Bx)*sin(Kr)*cos(By) + sin(By)*cos(Kr))*sin(Pr) - cos(Bx)*cos(By)*cos(Pr))*sin(Or) + (sin(Bx)*cos(By)*cos(Kr) - sin(By)*sin(Kr))*cos(Or)),-(((sin(Bx)*sin(Kr)*cos(By) + sin(By)*cos(Kr))*sin(Pr) - cos(Bx)*cos(By)*cos(Pr))*cos(Or) - (sin(Bx)*cos(By)*cos(Kr) - sin(By)*sin(Kr))*sin(Or))) - Oc
+    # diff = -arctan2(-(((sin(Bx)*sin(Kr)*cos(By) + sin(By)*cos(Kr))*sin(Pr) - cos(Bx)*cos(By)*cos(Pr))*sin(Or) + (sin(Bx)*cos(By)*cos(Kr) - sin(By)*sin(Kr))*cos(Or)),-(((sin(Bx)*sin(Kr)*cos(By) + sin(By)*cos(Kr))*sin(Pr) - cos(Bx)*cos(By)*cos(Pr))*cos(Or) - (sin(Bx)*cos(By)*cos(Kr) - sin(By)*sin(Kr))*sin(Or))) - Oc
+    
+    a = tan(-arctan2(-(((sin(Bx)*sin(Kr)*cos(By) + sin(By)*cos(Kr))*sin(Pr) - cos(Bx)*cos(By)*cos(Pr))*sin(Or) + (sin(Bx)*cos(By)*cos(Kr) - sin(By)*sin(Kr))*cos(Or)),-(((sin(Bx)*sin(Kr)*cos(By) + sin(By)*cos(Kr))*sin(Pr) - cos(Bx)*cos(By)*cos(Pr))*cos(Or) - (sin(Bx)*cos(By)*cos(Kr) - sin(By)*sin(Kr))*sin(Or))))
+    b = tan(Oc)
+    diff = arctan((a-b)/(1+a*b))
 
     return diff
 
@@ -167,7 +171,11 @@ def computeF_dP(Bx,By,Bz,Or,Pr,Kr,Oc,Pc,Kc):
 
 @vectorize(['float64(float64,float64,float64,float64,float64,float64,float64,float64,float64)'], target='parallel')
 def computeF_dK(Bx,By,Bz,Or,Pr,Kr,Oc,Pc,Kc):
-    diff = -arctan2((((sin(Bx)*sin(By)*sin(Bz) + cos(Bx)*cos(Bz))*sin(Kr) - sin(Bz)*cos(By)*cos(Kr))*cos(Pr) - (sin(Bx)*cos(Bz) - sin(By)*sin(Bz)*cos(Bx))*sin(Pr)),-(((sin(Bx)*sin(By)*cos(Bz) - sin(Bz)*cos(Bx))*sin(Kr) - cos(By)*cos(Bz)*cos(Kr))*cos(Pr) - (-sin(Bx)*sin(Bz) - sin(By)*cos(Bx)*cos(Bz))*sin(Pr))) - Kc
+    # diff = -arctan2((((sin(Bx)*sin(By)*sin(Bz) + cos(Bx)*cos(Bz))*sin(Kr) - sin(Bz)*cos(By)*cos(Kr))*cos(Pr) - (sin(Bx)*cos(Bz) - sin(By)*sin(Bz)*cos(Bx))*sin(Pr)),-(((sin(Bx)*sin(By)*cos(Bz) - sin(Bz)*cos(Bx))*sin(Kr) - cos(By)*cos(Bz)*cos(Kr))*cos(Pr) - (-sin(Bx)*sin(Bz) - sin(By)*cos(Bx)*cos(Bz))*sin(Pr))) - Kc
+    
+    a = tan(-arctan2((((sin(Bx)*sin(By)*sin(Bz) + cos(Bx)*cos(Bz))*sin(Kr) - sin(Bz)*cos(By)*cos(Kr))*cos(Pr) - (sin(Bx)*cos(Bz) - sin(By)*sin(Bz)*cos(Bx))*sin(Pr)),-(((sin(Bx)*sin(By)*cos(Bz) - sin(Bz)*cos(Bx))*sin(Kr) - cos(By)*cos(Bz)*cos(Kr))*cos(Pr) - (-sin(Bx)*sin(Bz) - sin(By)*cos(Bx)*cos(Bz))*sin(Pr))))
+    b = tan(Kc)
+    diff = arctan((a-b)/(1+a*b))
     
     return diff
 
@@ -201,6 +209,26 @@ def lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages):
     return results
 
 
+def lambda_compute_F2(x,Or,Pr,Kr,Oc,Pc,Kc,numImages):
+    
+    Bx = x[0]
+    By = x[1]
+    Bz = x[2]
+    
+    results = np.zeros(numImages*3,dtype=np.float64)
+    
+    dO = computeF_dO(Bx,By,Bz,-Or,-Pr,-Kr,Oc,Pc,Kc)
+    dP = computeF_dP(Bx,By,Bz,-Or,-Pr,-Kr,Oc,Pc,Kc)
+    dK = computeF_dK(Bx,By,Bz,-Or,-Pr,-Kr,Oc,Pc,Kc)
+    
+    for i in range(0,numImages):
+        results[i*3] = dO[i]
+        results[i*3+1] = dP[i]
+        results[i*3+2] = dK[i]
+        
+    return results
+
+
 def corrFromCov(Cov):
     
     Corr = np.array(Cov)
@@ -213,7 +241,7 @@ def corrFromCov(Cov):
     return Corr
 
 
-def main(currentDir,max_images):
+def main(currentDir,max_images,orientation_only):
     
     startProcessing = time.time()
     
@@ -309,10 +337,15 @@ def main(currentDir,max_images):
                         imagenames_list.append(input_eo_data[j][2].upper())                 #image name
 
             numImages = len(imagenames_list)
+            
+            if orientation_only:
+                print("  *** NOTE: ONLY CAMERA ORIENTATION CALIBRATION PARAMETERS ARE BEING ESTIMATED ***\n")
+                logFile.write("  *** NOTE: ONLY CAMERA ORIENTATION CALIBRATION PARAMETERS ARE BEING ESTIMATED ***\n")
+            
             print("      TOTAL NUMBER OF IMAGES FOUND: " + str(numImages))
             logFile.write("      TOTAL NUMBER OF IMAGES FOUND: " + str(numImages) + "\n")
 
-            #initial approximates to calibration unknowns
+            #initial approximates to calibration unknowns (offsets and boresights)
             x = np.zeros(6,dtype=np.float64)
             x[0] = current_la_bore[0]
             x[1] = current_la_bore[1]
@@ -383,6 +416,7 @@ def main(currentDir,max_images):
                         break                 
             
             # sys.exit(0)
+            
             #check and force max_images input (sampled evenly from the total images)         
             new_data_list = []
             new_imagenames_list = []
@@ -411,270 +445,516 @@ def main(currentDir,max_images):
             time.sleep(2)
             
             data = np.array(new_data_list)
-            imagenames = list(new_imagenames_list)
             
-            dof = numImages*6 - 6
-            s0_prev = 1e10
-            converged = False
-            itCount = 0
-            
-            w = np.zeros(numImages*6,dtype=np.float64)
-            
-            Er = np.zeros(numImages,dtype=np.float64)
-            Nr = np.zeros(numImages,dtype=np.float64)
-            Ur = np.zeros(numImages,dtype=np.float64)
-            Or = np.zeros(numImages,dtype=np.float64)
-            Pr = np.zeros(numImages,dtype=np.float64)
-            Kr = np.zeros(numImages,dtype=np.float64)
-            Ec = np.zeros(numImages,dtype=np.float64)
-            Nc = np.zeros(numImages,dtype=np.float64)
-            Uc = np.zeros(numImages,dtype=np.float64)
-            Oc = np.zeros(numImages,dtype=np.float64)
-            Pc = np.zeros(numImages,dtype=np.float64)
-            Kc = np.zeros(numImages,dtype=np.float64)
-            
-            converged = False
+            if not orientation_only:
+                
+                dof = numImages*6 - 6
+                s0_prev = 1e10
+                converged = False
+                itCount = 0
+                
+                w = np.zeros(numImages*6,dtype=np.float64)
+                
+                Er = np.zeros(numImages,dtype=np.float64)
+                Nr = np.zeros(numImages,dtype=np.float64)
+                Ur = np.zeros(numImages,dtype=np.float64)
+                Or = np.zeros(numImages,dtype=np.float64)
+                Pr = np.zeros(numImages,dtype=np.float64)
+                Kr = np.zeros(numImages,dtype=np.float64)
+                Ec = np.zeros(numImages,dtype=np.float64)
+                Nc = np.zeros(numImages,dtype=np.float64)
+                Uc = np.zeros(numImages,dtype=np.float64)
+                Oc = np.zeros(numImages,dtype=np.float64)
+                Pc = np.zeros(numImages,dtype=np.float64)
+                Kc = np.zeros(numImages,dtype=np.float64)
+                
+                converged = False
+        
+                for i in range(0,numImages):
+                    Er[i] = data[i,0]
+                    Nr[i] = data[i,1]
+                    Ur[i] = data[i,2]
+                    Or[i] = data[i,3]
+                    Pr[i] = data[i,4]
+                    Kr[i] = data[i,5]
+                    Ec[i] = data[i,6]
+                    Nc[i] = data[i,7]
+                    Uc[i] = data[i,8]
+                    Oc[i] = data[i,9]
+                    Pc[i] = data[i,10]
+                    Kc[i] = data[i,11]               
+        
+                print("\n         ********************************************************")
+                print("         ********* LEAST SQUARES ESTIMATION HAS STARTED *********")
+                print("         ********************************************************\n")
+                
+                logFile.write("\n         ********************************************************\n")
+                logFile.write("         ********* LEAST SQUARES ESTIMATION HAS STARTED *********\n")
+                logFile.write("         ********************************************************\n\n")
+                
+                n = 16
+                
+                #LS iterations
+                for j in range(0,20):
+                    if j == 1:
+                        n = 10
+                        
+                    itCount = j+1
+                    print("         Iteration: " + str(itCount))
+                    print("         --------------------------------------------------------")
+                    print("            Creating matrices (please wait...)\n")
+                    print("               Misclosure Vector ............. ", end="\r")
+                    
+                    logFile.write("         Iteration: " + str(itCount) + "\n")
+                    logFile.write("         --------------------------------------------------------" + "\n")
+                    logFile.write("            Creating matrices (please wait...)\n" + "\n")
+                    
+                    #compute misclosure vector (w)                            
+                    w = -lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages)
     
-            for i in range(0,numImages):
-                Er[i] = data[i,0]
-                Nr[i] = data[i,1]
-                Ur[i] = data[i,2]
-                Or[i] = data[i,3]
-                Pr[i] = data[i,4]
-                Kr[i] = data[i,5]
-                Ec[i] = data[i,6]
-                Nc[i] = data[i,7]
-                Uc[i] = data[i,8]
-                Oc[i] = data[i,9]
-                Pc[i] = data[i,10]
-                Kc[i] = data[i,11]               
+                    # print()
+                    # imagenames = list(new_imagenames_list)
+                    # w = np.round(w,4)
+                    # for i in range(0,numImages):
+                    #     print(imagenames[i],w[i*6],w[i*6+1],w[i*6+2],w[i*6+3],w[i*6+4],w[i*6+5])
+                    # sys.exit(0)
     
-            print("\n         ********************************************************")
-            print("         ********* LEAST SQUARES ESTIMATION HAS STARTED *********")
-            print("         ********************************************************\n")
-            
-            logFile.write("\n         ********************************************************\n")
-            logFile.write("         ********* LEAST SQUARES ESTIMATION HAS STARTED *********\n")
-            logFile.write("         ********************************************************\n\n")
-            
-            #GLS iterations
-            for j in range(0,20):
-                itCount = j+1
-                print("         Iteration: " + str(itCount))
-                print("         --------------------------------------------------------")
-                print("            Creating matrices (please wait...)\n")
-                print("               Misclosure Vector ............. ", end="\r")
-                
-                logFile.write("         Iteration: " + str(itCount) + "\n")
-                logFile.write("         --------------------------------------------------------" + "\n")
-                logFile.write("            Creating matrices (please wait...)\n" + "\n")
-                
-                #compute misclosure vector (w)                            
-                w = -lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages)
-
-                # print()
-                # w = np.round(w,4)
-                # for i in range(0,numImages):
-                #     print(imagenames[i],w[i*6],w[i*6+1],w[i*6+2],w[i*6+3],w[i*6+4],w[i*6+5])
-                # sys.exit(0)
-
-                print("               Misclosure Vector ............. DONE")
-                logFile.write("               Misclosure Vector ............. DONE" + "\n")
-                time.sleep(1)
-                print("               Jacobian - A Matrix (dF/dX) ... ", end="\r")
-                
-                #create Jacobian matrices
-                obsFunc = lambda x: (lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages))
-                jacobian = nd.Jacobian(obsFunc,step=1e-10)
-                A = jacobian(x)
-                
-                print("               Jacobian - A Matrix (dF/dX) ... DONE")
-                logFile.write("               Jacobian - A Matrix (dF/dX) ... DONE" + "\n")
-                time.sleep(1)
-
-                Ninv = np.linalg.inv(np.dot(A.T,A))
-                u = np.dot(A.T,w)
-                delta = np.dot(Ninv,u)
-
-                v = np.dot(A,delta) - w
-                s0 = np.sqrt(np.dot(v.T,v).item() / dof)
-    
-                if np.abs(s0_prev - s0) < 0.0005:
-                    converged = True
-                    Cx = s0**2 * Ninv
-                    sds = []
-                    sds.append(np.round(np.sqrt(Cx[0,0]),4))
-                    sds.append(np.round(np.sqrt(Cx[1,1]),4))
-                    sds.append(np.round(np.sqrt(Cx[2,2]),4))
-                    sds.append(np.round(np.degrees(np.sqrt(Cx[3,3]))*60.0,4))
-                    sds.append(np.round(np.degrees(np.sqrt(Cx[4,4]))*60.0,4))
-                    sds.append(np.round(np.degrees(np.sqrt(Cx[5,5]))*60.0,4))
-                    
-                    print("\n            **************************************")
-                    print("            ********* Solution Converged *********")
-                    print("            **************************************")
-                    print("              s0 = " + str(np.round(s0,5)))
-                    print("               X = " + str(np.round(x[0],3)) + " +/- " + str(sds[0]) + " [m]")
-                    print("               Y = " + str(np.round(x[1],3)) + " +/- " + str(sds[1]) + " [m]")
-                    print("               Z = " + str(np.round(x[2],3)) + " +/- " + str(sds[2]) + " [m]")
-                    print("              TX = " + str(np.round(np.degrees(x[3])*60.0,3)) + " +/- " + str(sds[3]) + " [arcmin]")
-                    print("              TY = " + str(np.round(np.degrees(x[4])*60.0,3)) + " +/- " + str(sds[4]) + " [arcmin]")
-                    print("              TZ = " + str(np.round(np.degrees(x[5])*60.0,3)) + " +/- " + str(sds[5]) + " [arcmin]")
-                    
-                    logFile.write("\n            **************************************" + "\n")
-                    logFile.write("            ********* Solution Converged *********" + "\n")
-                    logFile.write("            **************************************" + "\n")
-                    logFile.write("              s0 = " + str(np.round(s0,5)) + "\n")
-                    logFile.write("               X = " + str(np.round(x[0],3)) + " +/- " + str(sds[0]) + " [m]" + "\n")
-                    logFile.write("               Y = " + str(np.round(x[1],3)) + " +/- " + str(sds[1]) + " [m]" + "\n")
-                    logFile.write("               Z = " + str(np.round(x[2],3)) + " +/- " + str(sds[2]) + " [m]" + "\n")
-                    logFile.write("              TX = " + str(np.round(np.degrees(x[3])*60.0,3)) + " +/- " + str(sds[3]) + " [arcmin]" + "\n")
-                    logFile.write("              TY = " + str(np.round(np.degrees(x[4])*60.0,3)) + " +/- " + str(sds[4]) + " [arcmin]" + "\n")
-                    logFile.write("              TZ = " + str(np.round(np.degrees(x[5])*60.0,3)) + " +/- " + str(sds[5]) + " [arcmin]" + "\n")
-                    
-                    print("\n              Correlations")
-                    print("              ------------",end="")
-                    
-                    logFile.write("\n              Correlations\n")
-                    logFile.write("              ------------")
-                    
-                    corr = corrFromCov(Cx)
-                    
-                    for i in range(0,6):
-                        print("\n              ", end="")
-                        logFile.write("\n              ")
-                        for j in range(0,i+1):
-                            value = str(np.round(corr[i,j],2))
-                            diff = 5 - len(value)
-                            for k in range(0,diff):
-                                value += "0"
-                            print(value + " ", end="")
-                            logFile.write(value + " ")
-                    print() 
-                    logFile.write("\n")
-                    
-                    endProcessing = time.time()
-                    timeE = endProcessing-startProcessing
-                    print("\n            Processing Time: " + str(round((timeE)/60.,2)) + " mins")
-                    print("            **************************************\n")
-                    logFile.write("\n            Processing Time: " + str(round((timeE)/60.,2)) + " mins" + "\n")
-                    logFile.write("            **************************************\n" + "\n")
-                    
-                    checks = lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages)
-                    Ec_check = np.zeros(numImages,dtype=np.float64)
-                    Nc_check = np.zeros(numImages,dtype=np.float64)
-                    Uc_check = np.zeros(numImages,dtype=np.float64)
-                    Oc_check = np.zeros(numImages,dtype=np.float64)
-                    Pc_check = np.zeros(numImages,dtype=np.float64)
-                    Kc_check = np.zeros(numImages,dtype=np.float64)
-                    
-                    for i in range(0,numImages):
-                        Ec_check[i] = np.round(checks[i*6]+Ec[i],4)
-                        Nc_check[i] = np.round(checks[i*6+1]+Nc[i],4)
-                        Uc_check[i] = np.round(checks[i*6+2]+Uc[i],4)
-                        Oc_check[i] = np.round(np.degrees(checks[i*6+3]+Oc[i]),4)
-                        Pc_check[i] = np.round(np.degrees(checks[i*6+4]+Pc[i]),4)
-                        Kc_check[i] = np.round(np.degrees(checks[i*6+5]+Kc[i]),4)
-                        # print(imagenames[i],Ec_check[i],Nc_check[i],Uc_check[i],Oc_check[i],Pc_check[i],Kc_check[i])
-                
-                    stats = []
-                
-                    stats.append(str(np.round(np.mean(Ec_check-Ec),3)))
-                    stats.append(str(np.round(np.std(Ec_check-Ec),3)))
-                    stats.append(str(np.round(np.min(Ec_check-Ec),3)))
-                    stats.append(str(np.round(np.max(Ec_check-Ec),3)))
-                    
-                    stats.append(str(np.round(np.mean(Nc_check-Nc),3)))
-                    stats.append(str(np.round(np.std(Nc_check-Nc),3)))
-                    stats.append(str(np.round(np.min(Nc_check-Nc),3)))
-                    stats.append(str(np.round(np.max(Nc_check-Nc),3)))
-                    
-                    stats.append(str(np.round(np.mean(Uc_check-Uc),3)))
-                    stats.append(str(np.round(np.std(Uc_check-Uc),3)))
-                    stats.append(str(np.round(np.min(Uc_check-Uc),3)))
-                    stats.append(str(np.round(np.max(Uc_check-Uc),3)))
-                    
-                    stats.append(str(np.round(np.mean(Oc_check-np.degrees(Oc)),3)))
-                    stats.append(str(np.round(np.std(Oc_check-np.degrees(Oc)),3)))
-                    stats.append(str(np.round(np.min(Oc_check-np.degrees(Oc)),3)))
-                    stats.append(str(np.round(np.max(Oc_check-np.degrees(Oc)),3)))
-                    
-                    stats.append(str(np.round(np.mean(Pc_check-np.degrees(Pc)),3)))
-                    stats.append(str(np.round(np.std(Pc_check-np.degrees(Pc)),3)))
-                    stats.append(str(np.round(np.min(Pc_check-np.degrees(Pc)),3)))
-                    stats.append(str(np.round(np.max(Pc_check-np.degrees(Pc)),3)))
-                    
-                    stats.append(str(np.round(np.mean(Kc_check-np.degrees(Kc)),3)))
-                    stats.append(str(np.round(np.std(Kc_check-np.degrees(Kc)),3)))       
-                    stats.append(str(np.round(np.min(Kc_check-np.degrees(Kc)),3)))       
-                    stats.append(str(np.round(np.max(Kc_check-np.degrees(Kc)),3)))
-                    
-                    frmt_stats = []
-                    
-                    for i in range(0,24):
-                        diff = 6 - len(stats[i])
-                        new_stat = stats[i]
-                        for j in range(0,diff):
-                            new_stat += "0"
-                        if i < 12:
-                            new_stat += " m "
-                        else:
-                            new_stat += " deg "
-                        frmt_stats.append(new_stat)
-                            
-                
-                    print("\n                            Statistics on Resulting EO Differences")
-                    print("            ----------------------------------------------------------------------")
-                    print("                     X         Y         Z       Omega        Phi        Kappa")
-                    print("            Avg. ",frmt_stats[0],frmt_stats[4],frmt_stats[8],frmt_stats[12],frmt_stats[16],frmt_stats[20])
-                    print("            Std. ",frmt_stats[1],frmt_stats[5],frmt_stats[9],frmt_stats[13],frmt_stats[17],frmt_stats[21])
-                    print("            Min. ",frmt_stats[2],frmt_stats[6],frmt_stats[10],frmt_stats[14],frmt_stats[18],frmt_stats[22])
-                    print("            Max. ",frmt_stats[3],frmt_stats[7],frmt_stats[11],frmt_stats[15],frmt_stats[19],frmt_stats[23])
-                    print("\n")
-                    
-                    logFile.write("\n                            Statistics on Resulting EO Differences" + "\n")
-                    logFile.write("            ----------------------------------------------------------------------" + "\n")
-                    logFile.write("                     X         Y         Z       Omega        Phi        Kappa" + "\n")
-                    logFile.write("            Avg. " + " " + frmt_stats[0] + " " + frmt_stats[4] + " " + frmt_stats[8] + " " + frmt_stats[12] + " " + frmt_stats[16] + " " + frmt_stats[20] + "\n")
-                    logFile.write("            Std. " + " " + frmt_stats[1] + " " + frmt_stats[5] + " " + frmt_stats[9] + " " + frmt_stats[13] + " " + frmt_stats[17] + " " + frmt_stats[21] + "\n")
-                    logFile.write("            Min. " + " " + frmt_stats[2] + " " + frmt_stats[6] + " " + frmt_stats[10] + " " + frmt_stats[14] + " " + frmt_stats[18] + " " + frmt_stats[22] + "\n")
-                    logFile.write("            Max. " + " " + frmt_stats[3] + " " + frmt_stats[7] + " " + frmt_stats[11] + " " + frmt_stats[15] + " " + frmt_stats[19] + " " + frmt_stats[23] + "\n")
-                    logFile.write("\n\n")
-                    
-                    break
-                
-                
-                else:
-                    s0_prev = s0
-                    x += delta
-                    print("\n            Iteration Updates (s0 --> " + str(np.round(s0,5)) + ")\n")
-                    print("               X --> " + str(np.round(x[0],4)) + " [m]")
-                    print("               Y --> " + str(np.round(x[1],4)) + " [m]")
-                    print("               Z --> " + str(np.round(x[2],4)) + " [m]")
-                    print("              TX --> " + str(np.round(np.degrees(x[3])*60.0,4)) + " [arcmin]")
-                    print("              TY --> " + str(np.round(np.degrees(x[4])*60.0,4)) + " [arcmin]")
-                    print("              TZ --> " + str(np.round(np.degrees(x[5])*60.0,4)) + " [arcmin]")
-                    print("\n")
-                    
-                    logFile.write("\n            Iteration Updates (s0 --> " + str(np.round(s0,5)) + ")\n" + "\n")
-                    logFile.write("               X --> " + str(np.round(x[0],4)) + " [m]" + "\n")
-                    logFile.write("               Y --> " + str(np.round(x[1],4)) + " [m]" + "\n")
-                    logFile.write("               Z --> " + str(np.round(x[2],4)) + " [m]" + "\n")
-                    logFile.write("              TX --> " + str(np.round(np.degrees(x[3])*60.0,4)) + " [arcmin]" + "\n")
-                    logFile.write("              TY --> " + str(np.round(np.degrees(x[4])*60.0,4)) + " [arcmin]" + "\n")
-                    logFile.write("              TZ --> " + str(np.round(np.degrees(x[5])*60.0,4)) + " [arcmin]" + "\n")
-                    logFile.write("\n\n")
-                    
+                    print("               Misclosure Vector ............. DONE")
+                    logFile.write("               Misclosure Vector ............. DONE" + "\n")
                     time.sleep(1)
+                    print("               Jacobian - A Matrix (dF/dX) ... ", end="\r")
+                    
+                    #create Jacobian matrices
+                    obsFunc = lambda x: (lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages))
+                    jacobian = nd.Jacobian(obsFunc,step=0.0001,step_nom=1,order=n)
+                    A = jacobian(x)
+                    
+                    # for i in range(0,len(A)):
+                    #     print(A[i,0],A[i,1],A[i,2],A[i,3],A[i,4],A[i,5])
+                    # sys.exit(0)
+                    
+                    print("               Jacobian - A Matrix (dF/dX) ... DONE")
+                    logFile.write("               Jacobian - A Matrix (dF/dX) ... DONE" + "\n")
+                    time.sleep(1)
+    
+                    Ninv = np.linalg.inv(np.dot(A.T,A))
+                    u = np.dot(A.T,w)
+                    delta = np.dot(Ninv,u)
+    
+                    v = np.dot(A,delta) - w
+                    s0 = np.sqrt(np.dot(v.T,v).item() / dof)
+        
+                    if np.abs(s0_prev - s0) < 0.0005:
+                        converged = True
+                        Cx = s0**2 * Ninv
+                        sds = []
+                        sds.append(np.round(np.sqrt(Cx[0,0]),4))
+                        sds.append(np.round(np.sqrt(Cx[1,1]),4))
+                        sds.append(np.round(np.sqrt(Cx[2,2]),4))
+                        sds.append(np.round(np.degrees(np.sqrt(Cx[3,3]))*60.0,4))
+                        sds.append(np.round(np.degrees(np.sqrt(Cx[4,4]))*60.0,4))
+                        sds.append(np.round(np.degrees(np.sqrt(Cx[5,5]))*60.0,4))
+                        
+                        print("\n            **************************************")
+                        print("            ********* Solution Converged *********")
+                        print("            **************************************")
+                        print("              s0 = " + str(np.round(s0,5)))
+                        print("               X = " + str(np.round(x[0],3)) + " +/- " + str(sds[0]) + " [m]")
+                        print("               Y = " + str(np.round(x[1],3)) + " +/- " + str(sds[1]) + " [m]")
+                        print("               Z = " + str(np.round(x[2],3)) + " +/- " + str(sds[2]) + " [m]")
+                        print("              TX = " + str(np.round(np.degrees(x[3])*60.0,3)) + " +/- " + str(sds[3]) + " [arcmin]")
+                        print("              TY = " + str(np.round(np.degrees(x[4])*60.0,3)) + " +/- " + str(sds[4]) + " [arcmin]")
+                        print("              TZ = " + str(np.round(np.degrees(x[5])*60.0,3)) + " +/- " + str(sds[5]) + " [arcmin]")
+                        
+                        logFile.write("\n            **************************************" + "\n")
+                        logFile.write("            ********* Solution Converged *********" + "\n")
+                        logFile.write("            **************************************" + "\n")
+                        logFile.write("              s0 = " + str(np.round(s0,5)) + "\n")
+                        logFile.write("               X = " + str(np.round(x[0],3)) + " +/- " + str(sds[0]) + " [m]" + "\n")
+                        logFile.write("               Y = " + str(np.round(x[1],3)) + " +/- " + str(sds[1]) + " [m]" + "\n")
+                        logFile.write("               Z = " + str(np.round(x[2],3)) + " +/- " + str(sds[2]) + " [m]" + "\n")
+                        logFile.write("              TX = " + str(np.round(np.degrees(x[3])*60.0,3)) + " +/- " + str(sds[3]) + " [arcmin]" + "\n")
+                        logFile.write("              TY = " + str(np.round(np.degrees(x[4])*60.0,3)) + " +/- " + str(sds[4]) + " [arcmin]" + "\n")
+                        logFile.write("              TZ = " + str(np.round(np.degrees(x[5])*60.0,3)) + " +/- " + str(sds[5]) + " [arcmin]" + "\n")
+                        
+                        print("\n              Correlations")
+                        print("              ------------",end="")
+                        
+                        logFile.write("\n              Correlations\n")
+                        logFile.write("              ------------")
+                        
+                        corr = corrFromCov(Cx)
+                        
+                        for i in range(0,6):
+                            print("\n              ", end="")
+                            logFile.write("\n              ")
+                            for j in range(0,i+1):
+                                value = str(np.round(corr[i,j],2))
+                                diff = 5 - len(value)
+                                for k in range(0,diff):
+                                    value += "0"
+                                print(value + " ", end="")
+                                logFile.write(value + " ")
+                        print() 
+                        logFile.write("\n")
+                        
+                        endProcessing = time.time()
+                        timeE = endProcessing-startProcessing
+                        print("\n            Processing Time: " + str(round((timeE)/60.,2)) + " mins")
+                        print("            **************************************\n")
+                        logFile.write("\n            Processing Time: " + str(round((timeE)/60.,2)) + " mins" + "\n")
+                        logFile.write("            **************************************\n" + "\n")
+                        
+                        checks = lambda_compute_F(x,Er,Nr,Ur,Or,Pr,Kr,Ec,Nc,Uc,Oc,Pc,Kc,numImages)
+                        Ec_check = np.zeros(numImages,dtype=np.float64)
+                        Nc_check = np.zeros(numImages,dtype=np.float64)
+                        Uc_check = np.zeros(numImages,dtype=np.float64)
+                        Oc_check = np.zeros(numImages,dtype=np.float64)
+                        Pc_check = np.zeros(numImages,dtype=np.float64)
+                        Kc_check = np.zeros(numImages,dtype=np.float64)
+                        
+                        for i in range(0,numImages):
+                            Ec_check[i] = np.round(checks[i*6]+Ec[i],4)
+                            Nc_check[i] = np.round(checks[i*6+1]+Nc[i],4)
+                            Uc_check[i] = np.round(checks[i*6+2]+Uc[i],4)
+                            Oc_check[i] = np.round(np.degrees(checks[i*6+3]+Oc[i]),4)
+                            Pc_check[i] = np.round(np.degrees(checks[i*6+4]+Pc[i]),4)
+                            Kc_check[i] = np.round(np.degrees(checks[i*6+5]+Kc[i]),4)
+                            # print(imagenames[i],Ec_check[i],Nc_check[i],Uc_check[i],Oc_check[i],Pc_check[i],Kc_check[i])
+                    
+                        stats = []
+                    
+                        stats.append(str(np.round(np.mean(Ec_check-Ec),3)))
+                        stats.append(str(np.round(np.std(Ec_check-Ec),3)))
+                        stats.append(str(np.round(np.min(Ec_check-Ec),3)))
+                        stats.append(str(np.round(np.max(Ec_check-Ec),3)))
+                        
+                        stats.append(str(np.round(np.mean(Nc_check-Nc),3)))
+                        stats.append(str(np.round(np.std(Nc_check-Nc),3)))
+                        stats.append(str(np.round(np.min(Nc_check-Nc),3)))
+                        stats.append(str(np.round(np.max(Nc_check-Nc),3)))
+                        
+                        stats.append(str(np.round(np.mean(Uc_check-Uc),3)))
+                        stats.append(str(np.round(np.std(Uc_check-Uc),3)))
+                        stats.append(str(np.round(np.min(Uc_check-Uc),3)))
+                        stats.append(str(np.round(np.max(Uc_check-Uc),3)))
+                        
+                        stats.append(str(np.round(np.mean(Oc_check-np.degrees(Oc)),3)))
+                        stats.append(str(np.round(np.std(Oc_check-np.degrees(Oc)),3)))
+                        stats.append(str(np.round(np.min(Oc_check-np.degrees(Oc)),3)))
+                        stats.append(str(np.round(np.max(Oc_check-np.degrees(Oc)),3)))
+                        
+                        stats.append(str(np.round(np.mean(Pc_check-np.degrees(Pc)),3)))
+                        stats.append(str(np.round(np.std(Pc_check-np.degrees(Pc)),3)))
+                        stats.append(str(np.round(np.min(Pc_check-np.degrees(Pc)),3)))
+                        stats.append(str(np.round(np.max(Pc_check-np.degrees(Pc)),3)))
+                        
+                        stats.append(str(np.round(np.mean(Kc_check-np.degrees(Kc)),3)))
+                        stats.append(str(np.round(np.std(Kc_check-np.degrees(Kc)),3)))       
+                        stats.append(str(np.round(np.min(Kc_check-np.degrees(Kc)),3)))       
+                        stats.append(str(np.round(np.max(Kc_check-np.degrees(Kc)),3)))
+                        
+                        frmt_stats = []
+                        
+                        for i in range(0,24):
+                            diff = 6 - len(stats[i])
+                            new_stat = stats[i]
+                            for j in range(0,diff):
+                                new_stat += "0"
+                            if i < 12:
+                                new_stat += " m "
+                            else:
+                                new_stat += " deg "
+                            frmt_stats.append(new_stat)
+                                
+                    
+                        print("\n                            Statistics on Resulting EO Differences")
+                        print("            ----------------------------------------------------------------------")
+                        print("                     X         Y         Z       Omega        Phi        Kappa")
+                        print("            Avg. ",frmt_stats[0],frmt_stats[4],frmt_stats[8],frmt_stats[12],frmt_stats[16],frmt_stats[20])
+                        print("            Std. ",frmt_stats[1],frmt_stats[5],frmt_stats[9],frmt_stats[13],frmt_stats[17],frmt_stats[21])
+                        print("            Min. ",frmt_stats[2],frmt_stats[6],frmt_stats[10],frmt_stats[14],frmt_stats[18],frmt_stats[22])
+                        print("            Max. ",frmt_stats[3],frmt_stats[7],frmt_stats[11],frmt_stats[15],frmt_stats[19],frmt_stats[23])
+                        print("\n")
+                        
+                        logFile.write("\n                            Statistics on Resulting EO Differences" + "\n")
+                        logFile.write("            ----------------------------------------------------------------------" + "\n")
+                        logFile.write("                     X         Y         Z       Omega        Phi        Kappa" + "\n")
+                        logFile.write("            Avg. " + " " + frmt_stats[0] + " " + frmt_stats[4] + " " + frmt_stats[8] + " " + frmt_stats[12] + " " + frmt_stats[16] + " " + frmt_stats[20] + "\n")
+                        logFile.write("            Std. " + " " + frmt_stats[1] + " " + frmt_stats[5] + " " + frmt_stats[9] + " " + frmt_stats[13] + " " + frmt_stats[17] + " " + frmt_stats[21] + "\n")
+                        logFile.write("            Min. " + " " + frmt_stats[2] + " " + frmt_stats[6] + " " + frmt_stats[10] + " " + frmt_stats[14] + " " + frmt_stats[18] + " " + frmt_stats[22] + "\n")
+                        logFile.write("            Max. " + " " + frmt_stats[3] + " " + frmt_stats[7] + " " + frmt_stats[11] + " " + frmt_stats[15] + " " + frmt_stats[19] + " " + frmt_stats[23] + "\n")
+                        logFile.write("\n\n")
+                        
+                        break
+                    
+                    
+                    else:
+                        s0_prev = s0
+                        x += delta
+                        print("\n            Iteration Updates (s0 --> " + str(np.round(s0,5)) + ")\n")
+                        print("               X --> " + str(np.round(x[0],4)) + " [m]")
+                        print("               Y --> " + str(np.round(x[1],4)) + " [m]")
+                        print("               Z --> " + str(np.round(x[2],4)) + " [m]")
+                        print("              TX --> " + str(np.round(np.degrees(x[3])*60.0,4)) + " [arcmin]")
+                        print("              TY --> " + str(np.round(np.degrees(x[4])*60.0,4)) + " [arcmin]")
+                        print("              TZ --> " + str(np.round(np.degrees(x[5])*60.0,4)) + " [arcmin]")
+                        print("\n")
+                        
+                        logFile.write("\n            Iteration Updates (s0 --> " + str(np.round(s0,5)) + ")\n" + "\n")
+                        logFile.write("               X --> " + str(np.round(x[0],4)) + " [m]" + "\n")
+                        logFile.write("               Y --> " + str(np.round(x[1],4)) + " [m]" + "\n")
+                        logFile.write("               Z --> " + str(np.round(x[2],4)) + " [m]" + "\n")
+                        logFile.write("              TX --> " + str(np.round(np.degrees(x[3])*60.0,4)) + " [arcmin]" + "\n")
+                        logFile.write("              TY --> " + str(np.round(np.degrees(x[4])*60.0,4)) + " [arcmin]" + "\n")
+                        logFile.write("              TZ --> " + str(np.round(np.degrees(x[5])*60.0,4)) + " [arcmin]" + "\n")
+                        logFile.write("\n\n")
+                        
+                        time.sleep(1)
+                    
+                if not converged:
+                    print("\n#########################################################")
+                    print("##### SOLUTION DID NOT CONVERGE AFTER 20 ITERATIONS #####")
+                    print("#########################################################\n\n\n")
+                    
+                    logFile.write("\n#########################################################\n")
+                    logFile.write("##### SOLUTION DID NOT CONVERGE AFTER 20 ITERATIONS #####\n")
+                    logFile.write("#########################################################\n\n\n\n")
+            
+            else: #estimate orientation calibration parameters ONLY
                 
-            if not converged:
-                print("\n#########################################################")
-                print("##### SOLUTION DID NOT CONVERGE AFTER 20 ITERATIONS #####")
-                print("#########################################################\n\n\n")
+                #initial approximates to calibration unknowns (offsets and boresights)
+                x = np.zeros(3,dtype=np.float64)
+
+                #convert arcmins to degrees to radians
+                x[0] = np.radians(current_la_bore[3] / 60.0)
+                x[1] = np.radians(current_la_bore[4] / 60.0)
+                x[2] = np.radians(current_la_bore[5] / 60.0)
                 
-                logFile.write("\n#########################################################\n")
-                logFile.write("##### SOLUTION DID NOT CONVERGE AFTER 20 ITERATIONS #####\n")
-                logFile.write("#########################################################\n\n\n\n")
+                dof = numImages*3 - 3
+                s0_prev = 1e10
+                converged = False
+                itCount = 0
+                
+                w = np.zeros(numImages*3,dtype=np.float64)
+                
+                Or = np.zeros(numImages,dtype=np.float64)
+                Pr = np.zeros(numImages,dtype=np.float64)
+                Kr = np.zeros(numImages,dtype=np.float64)
+                Oc = np.zeros(numImages,dtype=np.float64)
+                Pc = np.zeros(numImages,dtype=np.float64)
+                Kc = np.zeros(numImages,dtype=np.float64)
+                
+                converged = False
+        
+                for i in range(0,numImages):
+                    Or[i] = data[i,3]
+                    Pr[i] = data[i,4]
+                    Kr[i] = data[i,5]
+                    Oc[i] = data[i,9]
+                    Pc[i] = data[i,10]
+                    Kc[i] = data[i,11]               
+        
+                print("\n         ********************************************************")
+                print("         ********* LEAST SQUARES ESTIMATION HAS STARTED *********")
+                print("         ********************************************************\n")
+                
+                logFile.write("\n         ********************************************************\n")
+                logFile.write("         ********* LEAST SQUARES ESTIMATION HAS STARTED *********\n")
+                logFile.write("         ********************************************************\n\n")
+                
+                n = 16
+                
+                #LS iterations
+                for j in range(0,20):
+                    if j == 1:
+                        n = 10
+                        
+                    itCount = j+1
+                    print("         Iteration: " + str(itCount))
+                    print("         --------------------------------------------------------")
+                    print("            Creating matrices (please wait...)\n")
+                    print("               Misclosure Vector ............. ", end="\r")
+                    
+                    logFile.write("         Iteration: " + str(itCount) + "\n")
+                    logFile.write("         --------------------------------------------------------" + "\n")
+                    logFile.write("            Creating matrices (please wait...)\n" + "\n")
+                    
+                    #compute misclosure vector (w)                            
+                    w = -lambda_compute_F2(x,Or,Pr,Kr,Oc,Pc,Kc,numImages)
+    
+                    # print()
+                    # imagenames = list(new_imagenames_list)
+                    # w = np.round(w,4)
+                    # # for i in range(0,numImages):
+                    # #     print(imagenames[i],w[i*3],w[i*3+1],w[i*3+2])
+                    # for i in range(0,len(w)):
+                    #     print(i,w[i])
+                    # sys.exit(0)
+    
+                    print("               Misclosure Vector ............. DONE")
+                    logFile.write("               Misclosure Vector ............. DONE" + "\n")
+                    time.sleep(1)
+                    print("               Jacobian - A Matrix (dF/dX) ... ", end="\r")
+                    
+                    #create Jacobian matrices
+                    obsFunc = lambda x: (lambda_compute_F2(x,Or,Pr,Kr,Oc,Pc,Kc,numImages))
+                    jacobian = nd.Jacobian(obsFunc,step=0.0001,step_nom=1,order=n)
+                    A = jacobian(x)
+                    
+                    # for i in range(0,len(AtA)):
+                    #     print(i,A[i,0],A[i,1],A[i,2])
+                    # sys.exit(0)
+                    
+                    
+                    print("               Jacobian - A Matrix (dF/dX) ... DONE")
+                    logFile.write("               Jacobian - A Matrix (dF/dX) ... DONE" + "\n")
+                    time.sleep(1)
+    
+                    Ninv = np.linalg.inv(np.dot(A.T,A))
+                    u = np.dot(A.T,w)
+                    delta = np.dot(Ninv,u)
+    
+                    v = np.dot(A,delta) - w
+                    s0 = np.sqrt(np.dot(v.T,v).item() / dof)
+        
+                    if np.abs(s0_prev - s0) < 0.0005:
+                        converged = True
+                        Cx = s0**2 * Ninv
+                        sds = []
+                        sds.append(np.round(np.degrees(np.sqrt(Cx[0,0]))*60.0,4))
+                        sds.append(np.round(np.degrees(np.sqrt(Cx[1,1]))*60.0,4))
+                        sds.append(np.round(np.degrees(np.sqrt(Cx[2,2]))*60.0,4))
+                        
+                        print("\n            **************************************")
+                        print("            ********* Solution Converged *********")
+                        print("            **************************************")
+                        print("              s0 = " + str(np.round(s0,5)))
+                        print("              TX = " + str(np.round(np.degrees(x[0])*60.0,3)) + " +/- " + str(sds[0]) + " [arcmin]")
+                        print("              TY = " + str(np.round(np.degrees(x[1])*60.0,3)) + " +/- " + str(sds[1]) + " [arcmin]")
+                        print("              TZ = " + str(np.round(np.degrees(x[2])*60.0,3)) + " +/- " + str(sds[2]) + " [arcmin]")
+                        
+                        logFile.write("\n            **************************************" + "\n")
+                        logFile.write("            ********* Solution Converged *********" + "\n")
+                        logFile.write("            **************************************" + "\n")
+                        logFile.write("              s0 = " + str(np.round(s0,5)) + "\n")
+                        logFile.write("              TX = " + str(np.round(np.degrees(x[0])*60.0,3)) + " +/- " + str(sds[0]) + " [arcmin]" + "\n")
+                        logFile.write("              TY = " + str(np.round(np.degrees(x[1])*60.0,3)) + " +/- " + str(sds[1]) + " [arcmin]" + "\n")
+                        logFile.write("              TZ = " + str(np.round(np.degrees(x[2])*60.0,3)) + " +/- " + str(sds[2]) + " [arcmin]" + "\n")
+                        
+                        print("\n              Correlations")
+                        print("              ------------",end="")
+                        
+                        logFile.write("\n              Correlations\n")
+                        logFile.write("              ------------")
+                        
+                        corr = corrFromCov(Cx)
+                        
+                        for i in range(0,3):
+                            print("\n              ", end="")
+                            logFile.write("\n              ")
+                            for j in range(0,i+1):
+                                value = str(np.round(corr[i,j],2))
+                                diff = 5 - len(value)
+                                for k in range(0,diff):
+                                    value += "0"
+                                print(value + " ", end="")
+                                logFile.write(value + " ")
+                        print() 
+                        logFile.write("\n")
+                        
+                        endProcessing = time.time()
+                        timeE = endProcessing-startProcessing
+                        print("\n            Processing Time: " + str(round((timeE)/60.,2)) + " mins")
+                        print("            **************************************\n")
+                        logFile.write("\n            Processing Time: " + str(round((timeE)/60.,2)) + " mins" + "\n")
+                        logFile.write("            **************************************\n" + "\n")
+                        
+                        checks = lambda_compute_F2(x,Or,Pr,Kr,Oc,Pc,Kc,numImages)
+                        Oc_check = np.zeros(numImages,dtype=np.float64)
+                        Pc_check = np.zeros(numImages,dtype=np.float64)
+                        Kc_check = np.zeros(numImages,dtype=np.float64)
+                        
+                        for i in range(0,numImages):
+                            Oc_check[i] = np.round(np.degrees(checks[i*3]+Oc[i]),4)
+                            Pc_check[i] = np.round(np.degrees(checks[i*3+1]+Pc[i]),4)
+                            Kc_check[i] = np.round(np.degrees(checks[i*3+2]+Kc[i]),4)
+                            # print(imagenames[i],Ec_check[i],Nc_check[i],Uc_check[i],Oc_check[i],Pc_check[i],Kc_check[i])
+                    
+                        stats = []
+                        
+                        stats.append(str(np.round(np.mean(Oc_check-np.degrees(Oc)),3)))
+                        stats.append(str(np.round(np.std(Oc_check-np.degrees(Oc)),3)))
+                        stats.append(str(np.round(np.min(Oc_check-np.degrees(Oc)),3)))
+                        stats.append(str(np.round(np.max(Oc_check-np.degrees(Oc)),3)))
+                        
+                        stats.append(str(np.round(np.mean(Pc_check-np.degrees(Pc)),3)))
+                        stats.append(str(np.round(np.std(Pc_check-np.degrees(Pc)),3)))
+                        stats.append(str(np.round(np.min(Pc_check-np.degrees(Pc)),3)))
+                        stats.append(str(np.round(np.max(Pc_check-np.degrees(Pc)),3)))
+                        
+                        stats.append(str(np.round(np.mean(Kc_check-np.degrees(Kc)),3)))
+                        stats.append(str(np.round(np.std(Kc_check-np.degrees(Kc)),3)))       
+                        stats.append(str(np.round(np.min(Kc_check-np.degrees(Kc)),3)))       
+                        stats.append(str(np.round(np.max(Kc_check-np.degrees(Kc)),3)))
+                        
+                        frmt_stats = []
+                        
+                        for i in range(0,12):
+                            diff = 6 - len(stats[i])
+                            new_stat = stats[i]
+                            for j in range(0,diff):
+                                new_stat += "0"
+                            new_stat += " deg "
+                            frmt_stats.append(new_stat)
+                                
+                    
+                        print("\n              Statistics on Resulting EO Differences")
+                        print("            ------------------------------------------")
+                        print("                     Omega        Phi        Kappa")
+                        print("            Avg. ",frmt_stats[0],frmt_stats[4],frmt_stats[8])
+                        print("            Std. ",frmt_stats[1],frmt_stats[5],frmt_stats[9])
+                        print("            Min. ",frmt_stats[2],frmt_stats[6],frmt_stats[10])
+                        print("            Max. ",frmt_stats[3],frmt_stats[7],frmt_stats[11])
+                        print("\n")
+                        
+                        logFile.write("\n              Statistics on Resulting EO Differences" + "\n")
+                        logFile.write("            ------------------------------------------" + "\n")
+                        logFile.write("                     Omega        Phi        Kappa" + "\n")
+                        logFile.write("            Avg. " + " " + frmt_stats[0] + " " + frmt_stats[4] + " " + frmt_stats[8] + "\n")
+                        logFile.write("            Std. " + " " + frmt_stats[1] + " " + frmt_stats[5] + " " + frmt_stats[9] + "\n")
+                        logFile.write("            Min. " + " " + frmt_stats[2] + " " + frmt_stats[6] + " " + frmt_stats[10] + "\n")
+                        logFile.write("            Max. " + " " + frmt_stats[3] + " " + frmt_stats[7] + " " + frmt_stats[11] + "\n")
+                        logFile.write("\n\n")
+                        
+                        break
+                    
+                    
+                    else:
+                        s0_prev = s0
+                        x += delta
+                        print("\n            Iteration Updates (s0 --> " + str(np.round(s0,5)) + ")\n")
+                        print("              TX --> " + str(np.round(np.degrees(x[0])*60.0,4)) + " [arcmin]")
+                        print("              TY --> " + str(np.round(np.degrees(x[1])*60.0,4)) + " [arcmin]")
+                        print("              TZ --> " + str(np.round(np.degrees(x[2])*60.0,4)) + " [arcmin]")
+                        print("\n")
+                        
+                        logFile.write("\n            Iteration Updates (s0 --> " + str(np.round(s0,5)) + ")\n" + "\n")
+                        logFile.write("              TX --> " + str(np.round(np.degrees(x[0])*60.0,4)) + " [arcmin]" + "\n")
+                        logFile.write("              TY --> " + str(np.round(np.degrees(x[1])*60.0,4)) + " [arcmin]" + "\n")
+                        logFile.write("              TZ --> " + str(np.round(np.degrees(x[2])*60.0,4)) + " [arcmin]" + "\n")
+                        logFile.write("\n\n")
+                        
+                        time.sleep(1)
+                    
+                if not converged:
+                    print("\n#########################################################")
+                    print("##### SOLUTION DID NOT CONVERGE AFTER 20 ITERATIONS #####")
+                    print("#########################################################\n\n\n")
+                    
+                    logFile.write("\n#########################################################\n")
+                    logFile.write("##### SOLUTION DID NOT CONVERGE AFTER 20 ITERATIONS #####\n")
+                    logFile.write("#########################################################\n\n\n\n")
         
         else:
             print("\n      *** ERROR: The \'images_matched_to_events.csv\' file is missing from the current directory ***\n")
@@ -695,5 +975,10 @@ if __name__ == "__main__":
     print("\nCamera Boresight Calibration Started...\n")
     currentDir = Path(sys.argv[1])
     maxImages = int(sys.argv[2])
+    orientationOnly = sys.argv[3]
     
-    main(currentDir,maxImages)
+    orientation_only = False
+    if orientationOnly.upper() == "TRUE":
+        orientation_only = True
+    
+    main(currentDir,maxImages,orientation_only)

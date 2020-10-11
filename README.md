@@ -15,7 +15,8 @@
 <p>
  - GitHub Publication started, May 5th, 2019<br>
  - Development effort to include NVidia GPU CUDA processing within OpenMMS applications started, May 2020<br>
-  - Version 1.3 publication completed, July 23rd, 2020<br>
+ - Version 1.3 publication completed, July 23rd, 2020<br>
+ - Support for Livox MID-40 lidar sensors within v1.3 design completed, October 11th, 2020<br>
 </p>
 <br>
 <img src="./images/pp_workflow2.jpg">

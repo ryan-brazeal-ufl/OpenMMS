@@ -82,8 +82,8 @@ dataCollectType = 0
 try:
     videoCamera = PiCamera()
     videoCamera.rotation = 180
-    videoCamera.resolution = (800,600)
-    videoCamera.framerate = 20
+    videoCamera.resolution = (1920,1080)
+    videoCamera.framerate = 30
     video_quality = 20
 except:
     cameraInstalled = "0"

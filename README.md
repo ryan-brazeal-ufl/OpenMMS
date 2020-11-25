@@ -19,4 +19,4 @@
  - Support for Livox MID-40 lidar sensors within v1.3 design completed, October 11th, 2020<br>
 </p>
 <br>
-<img src="./images/pp_workflow2.jpg">
+<img src="./images/openmms_software_workflow.jpg">
